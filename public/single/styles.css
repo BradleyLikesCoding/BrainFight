@@ -1,0 +1,162 @@
+:root {
+  --solo-ink: var(--bf-bg, #0d1117);
+  --solo-panel: rgba(22, 27, 34, 0.88);
+  --solo-panel-strong: rgba(13, 17, 23, 0.95);
+  --solo-accent: var(--bf-accent, #f06b1a);
+  --solo-accent-2: var(--bf-highlight, #f2a340);
+  --solo-text: var(--bf-text, #e6edf3);
+  --solo-muted: var(--bf-muted, #b2bdc9);
+  --solo-border: rgba(36, 158, 160, 0.35);
+  --solo-radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  color: var(--solo-text);
+  background: radial-gradient(circle at top, rgba(36, 158, 160, 0.15), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(240, 107, 26, 0.18), transparent 40%),
+    var(--solo-ink);
+}
+
+.solo-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+  display: grid;
+  gap: 20px;
+}
+
+.solo-hero {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  animation: rise 0.6s ease both;
+}
+
+.solo-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--solo-muted);
+  margin: 0;
+}
+
+.solo-title {
+  font-family: "Fraunces", "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 0;
+}
+
+.solo-subtitle {
+  margin: 0;
+  color: var(--solo-muted);
+  max-width: 520px;
+}
+
+.solo-card {
+  background: linear-gradient(135deg, rgba(22, 27, 34, 0.95), rgba(13, 17, 23, 0.95));
+  border: 1px solid var(--solo-border);
+  border-radius: var(--solo-radius);
+  padding: 18px;
+  display: grid;
+  gap: 18px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.5s ease 0.15s both;
+}
+
+.solo-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.solo-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--solo-muted);
+}
+
+.solo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.solo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.solo-button {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--solo-accent);
+  background: var(--solo-panel-strong);
+  color: var(--solo-text);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.solo-button--tile {
+  text-align: left;
+  padding: 14px 16px;
+  border-color: var(--solo-border);
+  background: var(--solo-panel);
+}
+
+.solo-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px rgba(240, 107, 26, 0.2);
+}
+
+.solo-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.solo-status {
+  margin: 0;
+  color: var(--solo-accent-2);
+  font-weight: 600;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .solo-shell {
+    padding: 24px 16px 36px;
+  }
+}

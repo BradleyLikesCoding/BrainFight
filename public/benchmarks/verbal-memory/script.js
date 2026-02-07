@@ -293,6 +293,12 @@ const endGame = (reason = "Game over") => {
         '*'
       );
     } catch (e) {}
+
+    if (new URLSearchParams(window.location.search).get('single') === '1') {
+      window.setTimeout(() => {
+        window.location.href = '/single';
+      }, 1200);
+    }
   }
 };
 

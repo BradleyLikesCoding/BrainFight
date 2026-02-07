@@ -71,6 +71,15 @@ const reportScoreOnce = (score) => {
   } catch (e) {}
 };
 
+const returnToSingle = () => {
+  const isSingle = new URLSearchParams(window.location.search).get('single') === '1';
+  if (isSingle) {
+    window.setTimeout(() => {
+      window.location.href = '/single';
+    }, 1200);
+  }
+};
+
 const resetRun = () => {
   state.trial = 0;
   state.times = [];
@@ -170,6 +179,7 @@ const finalizeReaction = (reaction) => {
     const worst = Math.max(...state.times);
 
     reportScoreOnce(avg);
+    returnToSingle();
 
     setMode("summary");
     setStageText(

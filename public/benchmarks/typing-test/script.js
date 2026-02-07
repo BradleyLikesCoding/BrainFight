@@ -128,6 +128,12 @@ const finishRun = () => {
     try {
       window.parent.postMessage({ type: 'BENCHMARK_COMPLETE', value: wpm }, '*');
     } catch (e) {}
+
+    if (new URLSearchParams(window.location.search).get('single') === '1') {
+      window.setTimeout(() => {
+        window.location.href = '/single';
+      }, 1200);
+    }
   }
 };
 
