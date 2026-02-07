@@ -39,7 +39,9 @@ const BENCHMARKS = [
 function buildLobbyPayload(game) {
   return {
     hostName: game.hostName || 'Host',
-    players: game.players.map(p => p.name),
+    players: game.players
+      .filter(p => !p.isHost)
+      .map(p => p.name),
   };
 }
 
@@ -60,7 +62,7 @@ io.on('connection', (socket) => {
       pin,
       host: socket.id,
       hostName: 'Host',
-      players: [],        // [{name, socketId}]
+      players: [{ name: 'Host', socketId: socket.id, isHost: true }],
       started: false,
       currentBenchmark: null,
       scores: {},
@@ -69,6 +71,8 @@ io.on('connection', (socket) => {
     };
     socket.join(`game-${pin}`);
     socket._hostedGame = pin;
+    socket._joinedGame = pin;
+    socket._playerName = games[pin].hostName;
     callback({ pin });
     console.log('Game created:', pin);
   });
