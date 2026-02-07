@@ -25,6 +25,10 @@ app.get('/join', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/join', 'index.html'));
 });
 
+app.get('/single', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/single', 'index.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const games = {};

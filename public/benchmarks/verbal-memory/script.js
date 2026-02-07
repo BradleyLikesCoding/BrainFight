@@ -187,6 +187,7 @@ const statusEl = document.getElementById("status");
 const wordEl = document.getElementById("word");
 const helperEl = document.getElementById("helper");
 const scoreEl = document.getElementById("score");
+const timeLeftEl = document.getElementById("time-left");
 const livesEl = document.getElementById("lives");
 const seenCountEl = document.getElementById("seen-count");
 const startButton = document.getElementById("start-button");
@@ -200,13 +201,25 @@ const state = {
   seen: new Set(),
   currentWord: "",
   active: false,
-  reported: false
+  reported: false,
+  roundTimerId: null,
+  roundTickId: null,
+  endAt: null
 };
+
+const roundDurationMs = 30000;
 
 const updateStats = () => {
   scoreEl.textContent = state.score;
   livesEl.textContent = state.lives;
   seenCountEl.textContent = state.seen.size;
+};
+
+const updateCountdown = (remainingMs = null) => {
+  const remaining = remainingMs !== null
+    ? Math.max(0, remainingMs)
+    : Math.max(0, (state.endAt || Date.now()) - Date.now());
+  timeLeftEl.textContent = `${(remaining / 1000).toFixed(1)}s`;
 };
 
 const setButtons = (isActive) => {
@@ -232,19 +245,45 @@ const startGame = () => {
   state.seen = new Set();
   state.active = true;
   state.reported = false;
+  if (state.roundTimerId) {
+    window.clearTimeout(state.roundTimerId);
+    state.roundTimerId = null;
+  }
+  if (state.roundTickId) {
+    window.clearInterval(state.roundTickId);
+    state.roundTickId = null;
+  }
   restartButton.classList.add("hidden");
   startButton.classList.add("hidden");
   helperEl.textContent = "Seen it before or new?";
   setButtons(true);
   updateStats();
   nextWord();
+
+  state.endAt = Date.now() + roundDurationMs;
+  updateCountdown(roundDurationMs);
+  state.roundTickId = window.setInterval(updateCountdown, 200);
+
+  state.roundTimerId = window.setTimeout(() => {
+    endGame("Time is up");
+  }, roundDurationMs);
 };
 
-const endGame = () => {
+const endGame = (reason = "Game over") => {
+  if (state.roundTimerId) {
+    window.clearTimeout(state.roundTimerId);
+    state.roundTimerId = null;
+  }
+  if (state.roundTickId) {
+    window.clearInterval(state.roundTickId);
+    state.roundTickId = null;
+  }
+  state.endAt = null;
+  updateCountdown(0);
   state.active = false;
   setButtons(false);
-  statusEl.textContent = "Game over";
-  helperEl.textContent = "Click Restart to try again";
+  statusEl.textContent = reason;
+  helperEl.textContent = "Click Restart to play again";
   restartButton.classList.remove("hidden");
   if (!state.reported) {
     state.reported = true;
@@ -289,3 +328,4 @@ seenButton.addEventListener("click", () => handleChoice("seen"));
 newButton.addEventListener("click", () => handleChoice("new"));
 
 updateStats();
+updateCountdown(roundDurationMs);
