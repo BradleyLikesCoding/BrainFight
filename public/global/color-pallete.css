@@ -1,7 +1,7 @@
 :root {
---blaze-orange: #fd5901ff;
+--blaze-orange: #f06b1aff;
 --princeton-orange: #f78104ff;
---orange: #faab36ff;
+--orange: #f2a340ff;
 --dark-cyan: #249ea0ff;
 --black-bg: #0d1117ff;
 --grey-bg: #161b22ff;
@@ -56,6 +56,7 @@
   padding: 16px;
   display: grid;
   gap: 12px;
+  border-radius: 4px;
 }
 
 .bf-row {
@@ -75,7 +76,7 @@
   color: var(--bf-text);
   border: 1px solid rgba(36, 158, 160, 0.5);
   padding: 10px 12px;
-  border-radius: 0;
+  border-radius: 4px;
 }
 
 .bf-button {
@@ -87,6 +88,7 @@
   letter-spacing: 0.12em;
   font-size: 0.75rem;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .bf-button--primary {
@@ -107,6 +109,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  border-radius: 4px;
 }
 
 .bf-muted {
