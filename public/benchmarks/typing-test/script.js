@@ -6,6 +6,8 @@ const accuracyEl = document.getElementById("accuracy");
 const timeEl = document.getElementById("time");
 const restartButton = document.getElementById("restart");
 
+const isSingle = new URLSearchParams(window.location.search).get('single') === '1';
+
 const prompts = [
   "the quick brown fox jumps over the lazy dog. a storm rolled in from the sea. the lights in the city flickered twice.",
   "i packed my bag and left before dawn. the train was late, but the platform was quiet. the day felt new and sharp.",
@@ -207,6 +209,10 @@ const resetRun = (promptIndex = null) => {
 
 restartButton.addEventListener("click", () => resetRun());
 inputEl.addEventListener("input", handleInput);
+
+if (!isSingle) {
+  restartButton.classList.add("hidden");
+}
 
 window.typingTestSync = {
   start: (promptIndex = 0, startAtMs = null) => {

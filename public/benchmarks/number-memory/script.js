@@ -9,6 +9,8 @@ const digitsEl = document.getElementById("digits");
 const livesEl = document.getElementById("lives");
 const stage = document.getElementById("stage");
 
+const isSingle = new URLSearchParams(window.location.search).get('single') === '1';
+
 const memorizationMs = 10000;
 const startingDigits = 3;
 const maxLives = 1;
@@ -142,7 +144,11 @@ const endGame = () => {
   statusEl.textContent = `Game over — survived ${finalRound} rounds`;
   numberEl.textContent = `Answer was ${state.current}`;
   setReadyState(false);
-  restartButton.classList.remove("hidden");
+  if (isSingle) {
+    restartButton.classList.remove("hidden");
+  } else {
+    restartButton.classList.add("hidden");
+  }
   stageStartButton.classList.add("hidden");
 
   // Report score to parent (for multiplayer)
@@ -236,6 +242,10 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateStats();
+
+if (!isSingle) {
+  restartButton.classList.add("hidden");
+}
 
 window.numberMemorySync = {
   startRound: (number, showAtMs = null) => {

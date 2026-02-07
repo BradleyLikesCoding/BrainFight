@@ -195,6 +195,8 @@ const seenButton = document.getElementById("seen-button");
 const newButton = document.getElementById("new-button");
 const restartButton = document.getElementById("restart-button");
 
+const isSingle = new URLSearchParams(window.location.search).get('single') === '1';
+
 const state = {
   score: 0,
   lives: 3,
@@ -284,7 +286,11 @@ const endGame = (reason = "Game over") => {
   setButtons(false);
   statusEl.textContent = reason;
   helperEl.textContent = "Click Restart to play again";
-  restartButton.classList.remove("hidden");
+  if (isSingle) {
+    restartButton.classList.remove("hidden");
+  } else {
+    restartButton.classList.add("hidden");
+  }
   if (!state.reported) {
     state.reported = true;
     try {
@@ -335,3 +341,7 @@ newButton.addEventListener("click", () => handleChoice("new"));
 
 updateStats();
 updateCountdown(roundDurationMs);
+
+if (!isSingle) {
+  restartButton.classList.add("hidden");
+}
