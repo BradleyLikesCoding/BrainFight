@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verbal Memory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../global/color-pallete.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <nav class="top-bar">
+        <span class="brand">Brainfight</span>
+        <span class="mode">Verbal memory</span>
+      </nav>
+
+      <section class="game">
+        <div id="stage" class="stage" tabindex="0">
+          <p id="status" class="stage-label">Press Start</p>
+          <p id="word" class="word">---</p>
+          <p id="helper" class="helper">Seen it before or new?</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Score</span>
+            <span id="score" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Lives</span>
+            <span id="lives" class="stat-value">3</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Seen</span>
+            <span id="seen-count" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="start-button" class="button" type="button">Start</button>
+          <button id="seen-button" class="button" type="button" disabled>
+            Seen
+          </button>
+          <button id="new-button" class="button" type="button" disabled>
+            New
+          </button>
+          <button id="restart-button" class="button hidden" type="button">
+            Restart
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
