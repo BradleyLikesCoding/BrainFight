@@ -15,6 +15,9 @@ function joinBattle() {
             document.getElementById('join-status').textContent = response.error;
         } else {
             document.getElementById('join-status').textContent = 'Successfully joined the game!';
+            document.getElementById('join-game').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
         }
+    
 });
 }
