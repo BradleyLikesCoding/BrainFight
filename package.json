@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BradleyLikesCoding/quhacks-thingydoodle.git"
+    "url": "git+https://github.com/BradleyLikesCoding/BrainFight.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BradleyLikesCoding/quhacks-thingydoodle/issues"
+    "url": "https://github.com/BradleyLikesCoding/BrainFight/issues"
   },
-  "homepage": "https://github.com/BradleyLikesCoding/quhacks-thingydoodle#readme",
+  "homepage": "https://github.com/BradleyLikesCoding/BrainFight#readme",
   "dependencies": {
     "express": "^5.2.1"
   }

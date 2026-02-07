@@ -2,6 +2,7 @@ const numberEl = document.getElementById("number");
 const statusEl = document.getElementById("status");
 const answerEl = document.getElementById("answer");
 const submitButton = document.getElementById("submit-button");
+const readyButton = document.getElementById("ready-button");
 const stageStartButton = document.getElementById("stage-start");
 const nextButton = document.getElementById("next-button");
 const restartButton = document.getElementById("restart-button");
@@ -19,7 +20,8 @@ const state = {
   phase: "idle",
   timeoutId: null,
   synced: false,
-  showAt: null
+  showAt: null,
+  ready: false
 };
 
 const setPhase = (phase) => {
@@ -29,6 +31,25 @@ const setPhase = (phase) => {
 const updateStats = () => {
   roundEl.textContent = state.round;
   digitsEl.textContent = state.digits;
+};
+
+const setReadyState = (isReady) => {
+  state.ready = isReady;
+
+  if (isReady) {
+    readyButton.classList.add("hidden");
+    answerEl.disabled = false;
+    submitButton.disabled = false;
+    answerEl.focus();
+    setPhase("input");
+  } else {
+    answerEl.disabled = true;
+    submitButton.disabled = true;
+  }
+
+  document.dispatchEvent(
+    new CustomEvent("numberMemoryReady", { detail: { ready: isReady } })
+  );
 };
 
 const nextDigitLength = (current) => current + 1;
@@ -58,23 +79,24 @@ const showNumber = (forcedNumber = null) => {
 
   state.timeoutId = window.setTimeout(() => {
     numberEl.textContent = "";
-    statusEl.textContent = "Type the number";
-    answerEl.disabled = false;
-    submitButton.disabled = false;
-    answerEl.focus();
-    setPhase("input");
+    statusEl.textContent = "Press Ready to type";
+    readyButton.classList.remove("hidden");
+    setPhase("ready");
+    setReadyState(false);
   }, memorizationMs);
 };
 
 const startRound = () => {
   state.round += 1;
   updateStats();
+  readyButton.classList.add("hidden");
   showNumber();
 };
 
 const startRoundWithNumber = (number, showAtMs = null) => {
   state.round += 1;
   updateStats();
+  readyButton.classList.add("hidden");
 
   if (showAtMs) {
     const delay = Math.max(showAtMs - Date.now(), 0);
@@ -97,6 +119,8 @@ const startGame = (autoRound = true) => {
   stageStartButton.classList.add("hidden");
   nextButton.classList.add("hidden");
   restartButton.classList.add("hidden");
+  readyButton.classList.add("hidden");
+  setReadyState(false);
   if (autoRound) {
     startRound();
   }
@@ -106,8 +130,8 @@ const endGame = () => {
   setPhase("end");
   statusEl.textContent = "Game over";
   numberEl.textContent = `Answer was ${state.current}`;
-  answerEl.disabled = true;
-  submitButton.disabled = true;
+  setReadyState(false);
+  readyButton.classList.add("hidden");
   nextButton.classList.add("hidden");
   restartButton.classList.remove("hidden");
   stageStartButton.classList.add("hidden");
@@ -144,6 +168,7 @@ stage.addEventListener("click", () => {
     startGame();
   }
 });
+readyButton.addEventListener("click", () => setReadyState(true));
 nextButton.addEventListener("click", startRound);
 restartButton.addEventListener("click", startGame);
 submitButton.addEventListener("click", submitAnswer);
@@ -161,5 +186,7 @@ window.numberMemorySync = {
       startGame(false);
     }
     startRoundWithNumber(number, showAtMs);
-  }
+  },
+  setReady: () => setReadyState(true),
+  getReady: () => state.ready
 };

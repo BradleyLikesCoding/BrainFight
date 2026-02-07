@@ -85,7 +85,7 @@ body {
 
 .input-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 10px;
 }
 
@@ -100,6 +100,10 @@ body {
 
 .answer:disabled {
   opacity: 0.6;
+}
+
+.input-row .button {
+  min-width: 92px;
 }
 
 .stats {
