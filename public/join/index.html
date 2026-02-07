@@ -4,27 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join a Battle</title>
-    <link rel="stylesheet" href="../global/color-pallete.css">
+    <link rel="stylesheet" href="/global/color-pallete.css">
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body class="bf-body">
-    <div id="game" class="bf-container" style="display: none;">
-        <header class="bf-header">
-            <h1>Waiting for the host to start the game...</h1>
-        </header>
-    </div>
-    <div class="bf-container" id="join-game">
+    <div class="bf-container">
       <header class="bf-header">
         <h1>Join a Battle</h1>
       </header>
       <main class="bf-main">
         <div class="bf-card">
+          <p class="bf-muted">Enter the host code to join a battle:</p>
           <div class="bf-row">
             <input class="bf-input" type="text" id="joincode" placeholder="Enter host code">
-            <input class="bf-input " id="joinname" placeholder="Enter your name">
+            <input class="bf-input" type="text" id="joinname" placeholder="Enter your name">
             <button class="bf-button bf-button--primary" onclick="joinBattle()">Join Game</button>
           </div>
+          <p id="join-status"></p>
         </div>
       </main>
     </div>
+    <script type="text/javascript" src="/join/scripts.js"></script>
   </body>
 </html>
