@@ -35,7 +35,10 @@ socket.on('players-updated', (players) => {
 // Host started the game — load benchmark
 socket.on('game-start', (data) => {
     showView('game');
-    document.getElementById('game-title').textContent = data.benchmark.name;
+    const titleEl = document.getElementById('game-title');
+    if (titleEl) {
+        titleEl.textContent = data.benchmark.name;
+    }
     document.getElementById('game-frame').src = data.benchmark.url;
 });
 
