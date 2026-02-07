@@ -36,7 +36,7 @@ function generatePin() {
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   
-  socket.on('host', (callback) => {
+  socket.on('host', (data, callback) => {
     const pin = generatePin();
     games[pin] = {
       pin,
