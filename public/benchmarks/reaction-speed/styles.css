@@ -1,0 +1,175 @@
+:root {
+  --ink: var(--black-bg, #0d1117);
+  --panel: var(--grey-bg, #161b22);
+  --accent: var(--blaze-orange, #fd5901);
+  --accent-soft: var(--princeton-orange, #f78104);
+  --sun: var(--orange, #faab36);
+  --aqua: var(--dark-cyan, #249ea0);
+  --text: #e6edf3;
+  --muted: #b2bdc9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  color: var(--text);
+  background: var(--ink);
+}
+
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  display: grid;
+  gap: 16px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.65rem;
+  padding: 8px 10px;
+  border: 1px solid var(--aqua);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.brand {
+  color: var(--accent);
+}
+
+.hero h1 {
+  margin: 6px 0 8px;
+  font-family: "Fraunces", "Georgia", serif;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sun);
+}
+
+.subhead {
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.game {
+  display: grid;
+  gap: 20px;
+}
+
+.stage {
+  background: var(--panel);
+  border: 2px solid var(--aqua);
+  border-radius: 0;
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  box-shadow: none;
+}
+
+.stage:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(36, 158, 160, 0.5);
+}
+
+.stage-title {
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.stage-instruction {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.stage-subtitle {
+  margin: 16px 0 0;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid rgba(36, 158, 160, 0.35);
+  border-radius: 0;
+  padding: 10px 12px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.7;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+body.state-waiting .stage {
+  background: var(--sun);
+  color: var(--ink);
+  border-color: var(--sun);
+}
+
+body.state-go .stage {
+  background: var(--aqua);
+  color: var(--ink);
+  border-color: var(--aqua);
+}
+
+body.state-false .stage {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+body.state-result .stage {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--panel);
+}
+
+body.state-summary .stage {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--panel);
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 20px 12px 32px;
+  }
+
+  .stage {
+    min-height: 220px;
+  }
+}

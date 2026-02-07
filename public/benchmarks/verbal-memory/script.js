@@ -1,0 +1,280 @@
+const wordList = [
+  "apple",
+  "river",
+  "stone",
+  "cloud",
+  "mirror",
+  "paper",
+  "candle",
+  "forest",
+  "window",
+  "thunder",
+  "ladder",
+  "garden",
+  "planet",
+  "pencil",
+  "helmet",
+  "pocket",
+  "melody",
+  "lantern",
+  "coffee",
+  "rocket",
+  "glacier",
+  "diamond",
+  "blanket",
+  "hammer",
+  "silver",
+  "basket",
+  "bridge",
+  "castle",
+  "dragon",
+  "engine",
+  "feather",
+  "guitar",
+  "harbor",
+  "island",
+  "jacket",
+  "kettle",
+  "legend",
+  "magnet",
+  "nugget",
+  "oyster",
+  "pillow",
+  "quartz",
+  "rabbit",
+  "saddle",
+  "teapot",
+  "umbrella",
+  "velvet",
+  "wallet",
+  "yellow",
+  "zipper",
+  "anchor",
+  "beacon",
+  "cedar",
+  "donut",
+  "ember",
+  "fossil",
+  "granite",
+  "horizon",
+  "ivy",
+  "jungle",
+  "kernel",
+  "lemon",
+  "marble",
+  "nectar",
+  "orbit",
+  "parcel",
+  "quiver",
+  "radar",
+  "summit",
+  "temple",
+  "unicorn",
+  "valley",
+  "willow",
+  "xenon",
+  "yard",
+  "zenith",
+  "atlas",
+  "breeze",
+  "canyon",
+  "desert",
+  "echo",
+  "falcon",
+  "galaxy",
+  "harvest",
+  "igloo",
+  "jigsaw",
+  "koala",
+  "lagoon",
+  "meadow",
+  "nebula",
+  "orchard",
+  "pebble",
+  "quest",
+  "ripple",
+  "signal",
+  "timber",
+  "underpass",
+  "vessel",
+  "whisper",
+  "xylophone",
+  "yonder",
+  "zephyr",
+  "artist",
+  "binary",
+  "circuit",
+  "dawn",
+  "eclipse",
+  "fabric",
+  "gadget",
+  "habitat",
+  "ink",
+  "jupiter",
+  "kingdom",
+  "library",
+  "motion",
+  "number",
+  "opal",
+  "prism",
+  "quarry",
+  "rhythm",
+  "solar",
+  "tunnel",
+  "unity",
+  "vector",
+  "waterfall",
+  "xray",
+  "yacht",
+  "zone",
+  "acorn",
+  "blaze",
+  "comet",
+  "drift",
+  "figment",
+  "grove",
+  "hollow",
+  "inkwell",
+  "jewel",
+  "knoll",
+  "lotus",
+  "meteor",
+  "notice",
+  "outpost",
+  "pioneer",
+  "quiet",
+  "ridge",
+  "shelter",
+  "thicket",
+  "upland",
+  "voyage",
+  "winter",
+  "xylem",
+  "yearling",
+  "zeppelin",
+  "axis",
+  "bolt",
+  "crest",
+  "dusk",
+  "flare",
+  "glade",
+  "harp",
+  "inlet",
+  "juniper",
+  "kiln",
+  "locket",
+  "matrix",
+  "napkin",
+  "ocean",
+  "paradox",
+  "quill",
+  "relic",
+  "sail",
+  "talon",
+  "unit",
+  "violet",
+  "weld",
+  "xenial",
+  "yarn",
+  "zesty",
+  "alpine",
+  "branch",
+  "coral",
+  "dune"
+];
+
+const statusEl = document.getElementById("status");
+const wordEl = document.getElementById("word");
+const helperEl = document.getElementById("helper");
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const seenCountEl = document.getElementById("seen-count");
+const startButton = document.getElementById("start-button");
+const seenButton = document.getElementById("seen-button");
+const newButton = document.getElementById("new-button");
+const restartButton = document.getElementById("restart-button");
+
+const state = {
+  score: 0,
+  lives: 3,
+  seen: new Set(),
+  currentWord: "",
+  active: false
+};
+
+const updateStats = () => {
+  scoreEl.textContent = state.score;
+  livesEl.textContent = state.lives;
+  seenCountEl.textContent = state.seen.size;
+};
+
+const setButtons = (isActive) => {
+  seenButton.disabled = !isActive;
+  newButton.disabled = !isActive;
+};
+
+const pickWord = () => {
+  const index = Math.floor(Math.random() * wordList.length);
+  return wordList[index];
+};
+
+const nextWord = () => {
+  state.currentWord = pickWord();
+  wordEl.textContent = state.currentWord;
+  statusEl.textContent = "Decide";
+  helperEl.textContent = "Seen it before or new?";
+};
+
+const startGame = () => {
+  state.score = 0;
+  state.lives = 3;
+  state.seen = new Set();
+  state.active = true;
+  restartButton.classList.add("hidden");
+  startButton.classList.add("hidden");
+  helperEl.textContent = "Seen it before or new?";
+  setButtons(true);
+  updateStats();
+  nextWord();
+};
+
+const endGame = () => {
+  state.active = false;
+  setButtons(false);
+  statusEl.textContent = "Game over";
+  helperEl.textContent = "Click Restart to try again";
+  restartButton.classList.remove("hidden");
+};
+
+const handleChoice = (choice) => {
+  if (!state.active) {
+    return;
+  }
+
+  const alreadySeen = state.seen.has(state.currentWord);
+  const correct = (choice === "seen" && alreadySeen) ||
+    (choice === "new" && !alreadySeen);
+
+  if (correct) {
+    state.score += 1;
+  } else {
+    state.lives -= 1;
+  }
+
+  state.seen.add(state.currentWord);
+  updateStats();
+
+  if (state.lives <= 0) {
+    endGame();
+    return;
+  }
+
+  nextWord();
+};
+
+startButton.addEventListener("click", startGame);
+restartButton.addEventListener("click", startGame);
+seenButton.addEventListener("click", () => handleChoice("seen"));
+newButton.addEventListener("click", () => handleChoice("new"));
+
+updateStats();

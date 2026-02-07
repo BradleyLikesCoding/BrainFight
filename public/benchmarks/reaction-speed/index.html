@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Reaction Speed</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../../global/color-pallete.css" />
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body class="state-idle">
+		<main class="page">
+			<nav class="top-bar">
+				<span class="brand">Brainfight</span>
+				<span class="mode">Reaction speed</span>
+			</nav>
+			<section class="game">
+				<div
+					id="stage"
+					class="stage"
+					role="button"
+					tabindex="0"
+					aria-live="polite"
+				>
+					<div class="stage-inner">
+						<p id="stage-title" class="stage-title">Ready?</p>
+						<p id="stage-instruction" class="stage-instruction">
+							Click or press Space to start
+						</p>
+						<p id="stage-subtitle" class="stage-subtitle"></p>
+					</div>
+				</div>
+
+				<div class="stats">
+					<div class="stat">
+						<span class="stat-label">Trial</span>
+						<span id="trial-counter" class="stat-value">0 / 0</span>
+					</div>
+					<div class="stat">
+						<span class="stat-label">Last</span>
+						<span id="last-time" class="stat-value">-- ms</span>
+					</div>
+					<div class="stat">
+						<span class="stat-label">Average</span>
+						<span id="average-time" class="stat-value">-- ms</span>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<script src="script.js" defer></script>
+	</body>
+</html>
