@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BrainFight - Reaction Time</title>
+    <link rel="stylesheet" href="../global/color-pallete.css" />
+    <style>
+      :root {
+        color-scheme: light;
+        --text-on-dark: #f7f7f7;
+        --surface-dark: #262627;
+        --surface-dark-2: #1f1f20;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--color-secondary);
+        color: var(--text-on-dark);
+      }
+
+      main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .panel {
+        width: min(780px, 100%);
+        background: var(--surface-dark);
+        color: var(--text-on-dark);
+        border-radius: 16px;
+        padding: 28px;
+        border: 2px solid var(--color-tertiary);
+        box-shadow: 0 18px 32px rgba(0, 0, 0, 0.22);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      .reaction-area {
+        margin-top: 18px;
+        padding: 24px;
+        border-radius: 14px;
+        background: var(--color-primary);
+        color: #1f1f1f;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: none;
+      }
+
+      .reaction-area.waiting {
+        background: var(--color-secondary);
+        color: var(--text-on-dark);
+      }
+
+      .reaction-area.ready {
+        background: var(--color-tertiary);
+      }
+
+      .controls {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .play-button,
+      .back-link {
+        appearance: none;
+        border: none;
+        background: var(--color-primary);
+        color: #1f1f1f;
+        font-weight: 700;
+        padding: 10px 18px;
+        border-radius: 999px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .back-link {
+        background: transparent;
+        color: var(--text-on-dark);
+        border: 1px solid var(--color-tertiary);
+      }
+
+      .play-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 16px;
+        font-size: 14px;
+        color: #c7c7c7;
+      }
+
+      .stat-row span {
+        background: var(--surface-dark-2);
+        padding: 8px 12px;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel" aria-live="polite">
+        <h1>Reaction Time Tester</h1>
+        <p>Press Play to begin, then click the panel when it turns teal.</p>
+
+        <div class="reaction-area" id="reaction-area" role="button" tabindex="0" aria-label="Reaction time test">
+          <div id="status">Press Play</div>
+          <div id="subtext">Wait for the color to change.</div>
+        </div>
+
+        <div class="controls">
+          <button class="play-button" id="play-button" type="button">Play</button>
+          <a class="back-link" href="../index/index.html">Main Menu</a>
+        </div>
+
+        <div class="stat-row">
+          <span id="last-time">Last: -- ms</span>
+          <span id="best-time">Best: -- ms</span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const area = document.getElementById("reaction-area");
+      const status = document.getElementById("status");
+      const subtext = document.getElementById("subtext");
+      const playButton = document.getElementById("play-button");
+      const lastTime = document.getElementById("last-time");
+      const bestTime = document.getElementById("best-time");
+
+      let state = "idle";
+      let startTime = 0;
+      let timerId = null;
+
+      const BEST_KEY = "reaction-best-ms";
+      const storedBest = Number.parseInt(localStorage.getItem(BEST_KEY) || "", 10);
+      if (!Number.isNaN(storedBest)) {
+        bestTime.textContent = `Best: ${storedBest} ms`;
+      }
+
+      const setState = (nextState) => {
+        state = nextState;
+        area.classList.toggle("waiting", state === "waiting");
+        area.classList.toggle("ready", state === "ready");
+      };
+
+      const scheduleReady = () => {
+        const delay = 1500 + Math.random() * 2000;
+        timerId = window.setTimeout(() => {
+          setState("ready");
+          status.textContent = "Click!";
+          subtext.textContent = "";
+          startTime = performance.now();
+        }, delay);
+      };
+
+      const startTest = () => {
+        setState("waiting");
+        status.textContent = "Wait...";
+        subtext.textContent = "Don't click yet.";
+        playButton.disabled = true;
+        scheduleReady();
+      };
+
+      const recordTime = () => {
+        const reaction = Math.round(performance.now() - startTime);
+        lastTime.textContent = `Last: ${reaction} ms`;
+        const currentBest = Number.parseInt(localStorage.getItem(BEST_KEY) || "", 10);
+        if (Number.isNaN(currentBest) || reaction < currentBest) {
+          localStorage.setItem(BEST_KEY, String(reaction));
+          bestTime.textContent = `Best: ${reaction} ms`;
+        }
+        setState("idle");
+        status.textContent = "Press Play";
+        subtext.textContent = "Wait for the color to change.";
+        playButton.disabled = false;
+      };
+
+      const handleClick = () => {
+        if (state === "waiting") {
+          window.clearTimeout(timerId);
+          timerId = null;
+          setState("idle");
+          status.textContent = "Too soon!";
+          subtext.textContent = "Press Play to restart.";
+          playButton.disabled = false;
+          return;
+        }
+
+        if (state === "ready") {
+          recordTime();
+        }
+      };
+
+      playButton.addEventListener("click", () => {
+        if (state === "idle") {
+          startTest();
+        }
+      });
+
+      area.addEventListener("click", handleClick);
+      area.addEventListener("keydown", (event) => {
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+          handleClick();
+        }
+      });
+    </script>
+  </body>
+</html>
