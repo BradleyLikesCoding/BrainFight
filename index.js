@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
   });
 
   // Host starts the game
-  socket.on('start-game', (callback) => {
+  socket.on('start-game', (settings, callback) => {
     const pin = socket._hostedGame;
     if (!pin || !games[pin]) {
       callback({ error: 'No game found' });
@@ -113,18 +113,37 @@ io.on('connection', (socket) => {
       return;
     }
 
-    const benchmark = pickBenchmark();
+    // Apply settings on first round, reuse on subsequent rounds
+    if (settings) {
+      game.settings = {
+        mode: settings.mode || 'random',
+        game: settings.game || null,
+        totalRounds: settings.totalRounds || 3,
+      };
+      game.round = 0;
+    }
+
+    const s = game.settings || { mode: 'random', game: null, totalRounds: 3 };
+
+    // Pick benchmark based on mode
+    let benchmark;
+    if (s.mode === 'single' && s.game) {
+      benchmark = BENCHMARKS.find(b => b.id === s.game) || pickBenchmark();
+    } else {
+      benchmark = pickBenchmark();
+    }
+
     game.currentBenchmark = benchmark;
     game.scores = {};
     game.round += 1;
     game.started = true;
 
-    console.log(`Game ${pin} round ${game.round}: ${benchmark.name}`);
+    console.log(`Game ${pin} round ${game.round}/${s.totalRounds}: ${benchmark.name}`);
 
-    // Tell everyone (host + players) to load the benchmark
     io.to(`game-${pin}`).emit('game-start', {
       benchmark: benchmark,
       round: game.round,
+      totalRounds: s.totalRounds,
     });
 
     callback({ success: true, benchmark });
@@ -163,6 +182,7 @@ io.on('connection', (socket) => {
       io.to(`game-${pin}`).emit('round-results', {
         benchmark: game.currentBenchmark.name,
         round: game.round,
+        totalRounds: (game.settings || {}).totalRounds || 3,
         scoreboard,
       });
 
