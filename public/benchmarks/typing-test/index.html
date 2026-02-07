@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../global/color-pallete.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <nav class="top-bar">
+        <span class="brand">Brainfight</span>
+        <span class="mode">Typing test</span>
+      </nav>
+
+      <section class="game">
+        <div class="stage">
+          <p class="stage-label" id="status">Start typing to begin</p>
+          <p class="prompt" id="prompt">Loading prompt...</p>
+        </div>
+
+        <textarea
+          id="input"
+          class="input"
+          rows="4"
+          placeholder="Type here..."
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+        ></textarea>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">WPM</span>
+            <span id="wpm" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Accuracy</span>
+            <span id="accuracy" class="stat-value">100%</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Time</span>
+            <span id="time" class="stat-value">0.0s</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="restart" class="button" type="button">Restart</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
