@@ -1,6 +1,7 @@
 const trialCount = 5;
 const minDelayMs = 2000;
 const maxDelayMs = 5000;
+const penaltyMs = 2000;
 
 const stage = document.getElementById("stage");
 const stageTitle = document.getElementById("stage-title");
@@ -141,8 +142,7 @@ const falseStart = () => {
     state.syncEndTimeoutId = null;
   }
 
-  setMode("false");
-  setStageText("Too soon!", "Click or press Space to try again", "False start");
+  applyPenalty("Too soon!", "False start penalty");
 };
 
 const recordReaction = () => {
@@ -188,11 +188,19 @@ const finalizeReaction = (reaction) => {
   );
 };
 
+const applyPenalty = (title, subtitle) => {
+  finalizeReaction(penaltyMs);
+
+  if (state.mode !== "summary") {
+    setMode("result");
+    setStageText(title, "Click or press Space for next trial", subtitle);
+  }
+};
+
 const finishSyncedTrial = () => {
   state.syncEndTimeoutId = null;
   if (state.pendingReaction === null) {
-    setMode("false");
-    setStageText("Too slow", "Click or press Space to try again", "No response");
+    applyPenalty("Too slow", "No response penalty");
     return;
   }
 

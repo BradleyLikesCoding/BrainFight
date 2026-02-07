@@ -170,20 +170,24 @@ io.on('connection', (socket) => {
     const game = games[pin];
     const name = socket._playerName || 'Host';
 
+    const participants = game.players.some(p => p.socketId === game.host)
+      ? game.players
+      : [{ name: game.hostName || 'Host', socketId: game.host, isHost: true }, ...game.players];
+
     game.scores[socket.id] = {
       name: name,
       score: data.score,
     };
 
     // Check if all players submitted (host doesn't count as a player)
-    const expectedCount = game.players.length;
-    const playerScores = game.players.filter(p => game.scores[p.socketId]).length;
+    const expectedCount = participants.length;
+    const playerScores = participants.filter(p => game.scores[p.socketId]).length;
 
     console.log(`Score from ${name}: ${data.score} (${playerScores}/${expectedCount})`);
 
     if (playerScores >= expectedCount) {
       // Build round scoreboard sorted by benchmark type
-      const sorted = game.players.map(p => {
+      const sorted = participants.map(p => {
         const s = game.scores[p.socketId];
         return { name: p.name, socketId: p.socketId, score: s ? s.score : null };
       });
