@@ -42,16 +42,24 @@ socket.on('game-start', (data) => {
     document.getElementById('game-frame').src = data.benchmark.url;
 });
 
-// Round results
+// Round results — show leaderboard
 socket.on('round-results', (data) => {
     showView('results');
-    document.getElementById('result-title').textContent = data.benchmark + ' — Round ' + data.round;
-    const ul = document.getElementById('results-list');
-    ul.innerHTML = '';
-    data.scoreboard.forEach((entry, i) => {
-        const li = document.createElement('li');
-        li.textContent = '#' + (i + 1) + '  ' + entry.name + '  —  ' + (entry.score !== null ? entry.score : 'DNF');
-        ul.appendChild(li);
+    document.getElementById('round-badge').textContent = 'Round ' + data.round + '/' + data.totalRounds;
+    document.getElementById('result-title').textContent = data.benchmark;
+    const tbody = document.getElementById('results-body');
+    tbody.innerHTML = '';
+    data.leaderboard.forEach((entry, i) => {
+        const roundEntry = data.roundScoreboard.find(r => r.name === entry.name);
+        const roundScore = roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—';
+        const tr = document.createElement('tr');
+        if (i < 3) tr.classList.add('rank-' + (i + 1));
+        tr.innerHTML =
+            '<td class="rank">' + (i + 1) + '</td>' +
+            '<td class="player-name">' + entry.name + '</td>' +
+            '<td class="score">' + entry.points + '</td>' +
+            '<td class="score">' + roundScore + '</td>';
+        tbody.appendChild(tr);
     });
 });
 

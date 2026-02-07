@@ -9,23 +9,27 @@ const lobbyView    = document.getElementById('lobby-view');
 const gameView     = document.getElementById('game-view');
 const gameFrame    = document.getElementById('game-frame');
 const resultsView  = document.getElementById('results-view');
-const resultsList  = document.getElementById('results-list');
+const resultsBody  = document.getElementById('results-body');
 const resultTitle  = document.getElementById('result-title');
+const roundBadge   = document.getElementById('round-badge');
 const btnNext      = document.getElementById('btn-next');
 const gameModeEl   = document.getElementById('game-mode');
 const gamePickEl   = document.getElementById('game-pick');
 const gamePickRow  = document.getElementById('game-pick-row');
 const gameRoundsEl = document.getElementById('game-rounds');
+const nextGameRow  = document.getElementById('next-game-row');
+const nextGamePick = document.getElementById('next-game-pick');
 
 let currentPin = null;
 let totalRounds = 3;
 let currentRound = 0;
+let currentMode = 'random';
 
 const socket = io();
 
 // Toggle game picker visibility
 gameModeEl.addEventListener('change', () => {
-    gamePickRow.style.display = gameModeEl.value === 'single' ? '' : 'none';
+    gamePickRow.style.display = gameModeEl.value === 'choose' ? '' : 'none';
 });
 
 socket.on('connect', () => {
@@ -58,23 +62,37 @@ socket.on('game-start', (data) => {
     gameFrame.src = data.benchmark.url;
 });
 
-// Round results — show scoreboard
+// Round results — show leaderboard
 socket.on('round-results', (data) => {
     showView('results');
     currentRound = data.round;
-    resultTitle.textContent = data.benchmark + ' — Round ' + data.round + '/' + data.totalRounds;
-    resultsList.innerHTML = '';
-    data.scoreboard.forEach((entry, i) => {
-        const li = document.createElement('li');
-        li.textContent = '#' + (i + 1) + '  ' + entry.name + '  —  ' + (entry.score !== null ? entry.score : 'DNF');
-        resultsList.appendChild(li);
+    totalRounds = data.totalRounds;
+    currentMode = data.mode || 'random';
+    roundBadge.textContent = 'Round ' + data.round + '/' + data.totalRounds;
+    resultTitle.textContent = data.benchmark;
+
+    // Render leaderboard table
+    resultsBody.innerHTML = '';
+    data.leaderboard.forEach((entry, i) => {
+        const roundEntry = data.roundScoreboard.find(r => r.name === entry.name);
+        const roundScore = roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—';
+        const tr = document.createElement('tr');
+        if (i < 3) tr.classList.add('rank-' + (i + 1));
+        tr.innerHTML =
+            '<td class="rank">' + (i + 1) + '</td>' +
+            '<td class="player-name">' + entry.name + '</td>' +
+            '<td class="score">' + entry.points + '</td>' +
+            '<td class="score">' + roundScore + '</td>';
+        resultsBody.appendChild(tr);
     });
 
-    // Auto-continue if more rounds remain
+    // Show/hide game picker and next button
     if (data.round < data.totalRounds) {
         btnNext.textContent = 'Next Round';
+        nextGameRow.style.display = currentMode === 'choose' ? 'flex' : 'none';
     } else {
         btnNext.textContent = 'Back to Lobby';
+        nextGameRow.style.display = 'none';
     }
 });
 
@@ -116,12 +134,13 @@ btnCopy.addEventListener('click', () => {
 btnStart.addEventListener('click', () => {
     statusText.textContent = 'Starting...';
     btnStart.disabled = true;
-    totalRounds = parseInt(gameRoundsEl.value, 10);
+    currentMode = gameModeEl.value;
+    totalRounds = parseInt(gameRoundsEl.value, 10) || 3;
     currentRound = 0;
 
     const settings = {
-        mode: gameModeEl.value,
-        game: gameModeEl.value === 'single' ? gamePickEl.value : null,
+        mode: currentMode,
+        game: currentMode === 'choose' ? gamePickEl.value : null,
         totalRounds: totalRounds,
     };
 
@@ -135,9 +154,12 @@ btnStart.addEventListener('click', () => {
 
 btnNext.addEventListener('click', () => {
     if (currentRound < totalRounds) {
-        // Start next round
-        statusText.textContent = 'Starting next round...';
-        socket.emit('start-game', null, (response) => {
+        // Start next round — send game choice if in choose mode
+        const nextData = {};
+        if (currentMode === 'choose') {
+            nextData.game = nextGamePick.value;
+        }
+        socket.emit('start-game', nextData, (response) => {
             if (response.error) {
                 showView('lobby');
                 statusText.textContent = response.error;
