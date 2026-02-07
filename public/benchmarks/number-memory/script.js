@@ -9,9 +9,9 @@ const digitsEl = document.getElementById("digits");
 const livesEl = document.getElementById("lives");
 const stage = document.getElementById("stage");
 
-const memorizationMs = 30000;
+const memorizationMs = 10000;
 const startingDigits = 3;
-const maxLives = 3;
+const maxLives = 1;
 
 const state = {
   round: 0,
@@ -40,12 +40,19 @@ const setReadyState = (isReady) => {
   state.ready = isReady;
 
   if (isReady) {
+    // Hide the number when player is ready to type
     numberEl.textContent = "";
     statusEl.textContent = "Type the number";
     answerEl.disabled = false;
     submitButton.disabled = false;
     answerEl.focus();
     setPhase("input");
+
+    // Cancel the auto-reveal timer since player started early
+    if (state.timeoutId) {
+      window.clearTimeout(state.timeoutId);
+      state.timeoutId = null;
+    }
   } else {
     answerEl.disabled = true;
     submitButton.disabled = true;
@@ -129,11 +136,20 @@ const startGame = (autoRound = true) => {
 
 const endGame = () => {
   setPhase("end");
-  statusEl.textContent = "Game over";
+  const finalRound = state.round;
+  statusEl.textContent = `Game over — survived ${finalRound} rounds`;
   numberEl.textContent = `Answer was ${state.current}`;
   setReadyState(false);
   restartButton.classList.remove("hidden");
   stageStartButton.classList.add("hidden");
+
+  // Report score to parent (for multiplayer)
+  try {
+    window.parent.postMessage(
+      { type: 'BENCHMARK_COMPLETE', value: finalRound },
+      '*'
+    );
+  } catch (e) {}
 };
 
 const showResult = (isCorrect) => {
