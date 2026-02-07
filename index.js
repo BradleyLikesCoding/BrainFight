@@ -57,12 +57,37 @@ io.on('connection', (socket) => {
       callback({ error: 'Game not found' });
       return;
     }
+
+    // Prevent duplicate joins by same socket
+    if (socket._joinedGame) {
+      callback({ error: 'You have already joined a game' });
+      return;
+    }
+
+    // Prevent duplicate name in same game
+    if (game.players.includes(name)) {
+      callback({ error: 'That name is already taken' });
+      return;
+    }
     
     game.players.push(name);
     socket.join(`game-${pin}`);
+    socket._joinedGame = pin;
+    socket._playerName = name;
     
     io.to(`game-${pin}`).emit('players-updated', game.players);
     callback({ success: true, players: game.players });
+  });
+
+  // Remove player on disconnect
+  socket.on('disconnect', () => {
+    if (socket._joinedGame) {
+      const game = games[socket._joinedGame];
+      if (game) {
+        game.players = game.players.filter(n => n !== socket._playerName);
+        io.to(`game-${socket._joinedGame}`).emit('players-updated', game.players);
+      }
+    }
   });
 });
 
