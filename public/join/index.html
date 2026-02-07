@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head></head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Join a Battle</title>
-    </head>
-    <body>
-        <h1>Join a Battle</h1>
-        <p>Enter the host code to join a battle:</p>
-        <input type="text" id="joincode" placeholder="Enter host code">
-        <button onclick="joinBattle()">Join Game</button>
-    </body>
+        <head>
+                <script src="/socket.io/socket.io.js"></script>
+                <script src="scripts.js"></script>
+                <link rel="stylesheet" href="../global/color-pallete.css">
+                <link rel="stylesheet" href="styles.css">
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Join a Battle</title>
+        </head>
+        <body>
+                <div class="page-wrap">
+                    <main class="card" role="main">
+                        <header class="card-header">
+                            <div class="logo-dot" aria-hidden="true"></div>
+                            <h1>Join a Battle</h1>
+                        </header>
+
+                        <p class="lead">Enter the host code to join a battle:</p>
+
+                        <input type="text" id="username" placeholder="Enter username">
+
+                        <div class="form-row">
+                            <input type="text" id="joincode" placeholder="Enter host code">
+                            <button class="btn btn-primary" onclick="joinBattle()">Join</button>
+                        </div>
+
+                        <p class="meta"><span class="muted">Don't have a code?</span> <a href="../host/index.html">Create one</a></p>
+                    </main>
+                </div>
+        </body>
 </html>
