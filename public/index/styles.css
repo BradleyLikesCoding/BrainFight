@@ -1,0 +1,72 @@
+:root {
+    --princeton-orange: #ff8811ff;
+    --jasmine: #f4d06fff;
+    --floral-white: #fff8f0ff;
+    --pearl-aqua: #9dd9d2ff;
+    --space-indigo: #392f5aff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--floral-white);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: var(--floral-white);
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+header {
+    background: var(--space-indigo);
+    color: var(--floral-white);
+    padding: 40px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+main {
+    padding: 40px 20px;
+    flex: 1;
+    text-align: center;
+}
+
+main p {
+    font-size: 1.1em;
+    color: var(--space-indigo);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+footer {
+    background: var(--jasmine);
+    color: var(--space-indigo);
+    padding: 20px;
+    text-align: center;
+    border-top: 3px solid var(--princeton-orange);
+}
+
+footer p {
+    font-size: 0.9em;
+    margin: 0;
+}
