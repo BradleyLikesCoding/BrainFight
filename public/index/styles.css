@@ -1,11 +1,3 @@
-:root {
-    --princeton-orange: #ff8811ff;
-    --jasmine: #f4d06fff;
-    --floral-white: #fff8f0ff;
-    --pearl-aqua: #9dd9d2ff;
-    --space-indigo: #392f5aff;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -69,4 +61,17 @@ footer {
 footer p {
     font-size: 0.9em;
     margin: 0;
+}
+
+.home-main {
+  text-align: center;
+  justify-items: center;
+}
+
+.home-main .bf-card {
+  width: min(720px, 100%);
+}
+
+.home-actions {
+  justify-content: center;
 }

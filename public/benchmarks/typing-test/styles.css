@@ -57,10 +57,9 @@ body {
   background: var(--panel);
   border: 2px solid var(--aqua);
   border-radius: var(--radius);
-  min-height: 220px;
+  min-height: 180px;
   display: grid;
-  place-items: center;
-  text-align: center;
+  gap: 12px;
   padding: 16px;
 }
 
@@ -72,15 +71,50 @@ body {
   margin: 0;
 }
 
-.word {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  margin: 10px 0 8px;
+.prompt {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 
-.helper {
-  margin: 0;
-  color: var(--muted);
+.prompt .char {
+  display: inline-block;
+  padding: 1px 1px;
+  margin: 0 1px 2px 0;
+  border-radius: 2px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.prompt .char.space {
+  min-width: 0.6ch;
+}
+
+.prompt .char.correct {
+  background: rgba(46, 160, 67, 0.16);
+}
+
+.prompt .char.wrong {
+  background: rgba(218, 54, 51, 0.16);
+}
+
+.prompt .char.current {
+  background: rgba(36, 158, 160, 0.16);
+}
+
+.input {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid rgba(36, 158, 160, 0.35);
+  border-radius: var(--radius);
+  padding: 12px;
+  font-size: 1rem;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.input:disabled {
+  opacity: 0.6;
 }
 
 .stats {
@@ -111,9 +145,8 @@ body {
 }
 
 .controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .button {
@@ -129,23 +162,10 @@ body {
   cursor: pointer;
 }
 
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.button.primary {
-  border-color: var(--accent);
-}
-
 .button:hover {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(240, 107, 26, 0.2);
   transform: translateY(-1px);
-}
-
-.hidden {
-  display: none;
 }
 
 @media (max-width: 720px) {
@@ -154,6 +174,6 @@ body {
   }
 
   .stage {
-    min-height: 200px;
+    min-height: 160px;
   }
 }
