@@ -1,3 +1,5 @@
+let socket;
+
 function joinBattle() {
     const name = document.getElementById('joinname').value;
     const code = document.getElementById('joincode').value;
@@ -6,5 +8,13 @@ function joinBattle() {
         document.getElementById('join-status').textContent = 'Please enter both your name and the game code.';
         return;
     }
-}
 
+    socket = io(window.location.hostname + ':3000');
+    socket.emit("join", {pin: code, name: name}, (response) => {
+        if (response.error) {
+            document.getElementById('join-status').textContent = response.error;
+        } else {
+            document.getElementById('join-status').textContent = 'Successfully joined the game!';
+        }
+});
+}
