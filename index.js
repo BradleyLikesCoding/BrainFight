@@ -1,37 +1,68 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
+const io = new Server(server, {
   cors: { origin: '*' }
 });
 
-var games = {};
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index', 'index.html'));
+});
+
+app.get('/host', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/host', 'index.html'));
+});
+
+app.get('/join', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/join', 'index.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+const games = {};
 
 function generatePin() {
-    return Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   
+  socket.on('host', (callback) => {
+    const pin = generatePin();
+    games[pin] = {
+      pin,
+      host: socket.id,
+      players: [],
+      started: false
+    };
+    socket.join(`game-${pin}`);
+    callback({ pin });
+    console.log('Game created:', pin);
+  });
+
   socket.on('join', (data, callback) => {
     const { pin, name } = data;
+    const game = games[pin];
     
-    if (!pin || !name) {
-      callback({ error: 'Missing pin or name' });
+    if (!game) {
+      callback({ error: 'Game not found' });
       return;
     }
     
-    // Find or create game room
+    game.players.push(name);
     socket.join(`game-${pin}`);
     
-    callback({
-      success: true,
-      players: [name] // Replace with actual player list
-    });
+    io.to(`game-${pin}`).emit('players-updated', game.players);
+    callback({ success: true, players: game.players });
   });
 });
 
