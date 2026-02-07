@@ -8,15 +8,25 @@ const btnCopy      = document.getElementById('btn-copy');
 const lobbyView    = document.getElementById('lobby-view');
 const gameView     = document.getElementById('game-view');
 const gameFrame    = document.getElementById('game-frame');
-const gameTitle    = document.getElementById('game-title');
 const resultsView  = document.getElementById('results-view');
 const resultsList  = document.getElementById('results-list');
 const resultTitle  = document.getElementById('result-title');
 const btnNext      = document.getElementById('btn-next');
+const gameModeEl   = document.getElementById('game-mode');
+const gamePickEl   = document.getElementById('game-pick');
+const gamePickRow  = document.getElementById('game-pick-row');
+const gameRoundsEl = document.getElementById('game-rounds');
 
 let currentPin = null;
+let totalRounds = 3;
+let currentRound = 0;
 
 const socket = io();
+
+// Toggle game picker visibility
+gameModeEl.addEventListener('change', () => {
+    gamePickRow.style.display = gameModeEl.value === 'single' ? '' : 'none';
+});
 
 socket.on('connect', () => {
     statusText.textContent = 'Creating room...';
@@ -45,20 +55,27 @@ socket.on('players-updated', (players) => {
 // Game started — show the benchmark
 socket.on('game-start', (data) => {
     showView('game');
-    gameTitle.textContent = data.benchmark.name;
     gameFrame.src = data.benchmark.url;
 });
 
 // Round results — show scoreboard
 socket.on('round-results', (data) => {
     showView('results');
-    resultTitle.textContent = data.benchmark + ' — Round ' + data.round;
+    currentRound = data.round;
+    resultTitle.textContent = data.benchmark + ' — Round ' + data.round + '/' + data.totalRounds;
     resultsList.innerHTML = '';
     data.scoreboard.forEach((entry, i) => {
         const li = document.createElement('li');
         li.textContent = '#' + (i + 1) + '  ' + entry.name + '  —  ' + (entry.score !== null ? entry.score : 'DNF');
         resultsList.appendChild(li);
     });
+
+    // Auto-continue if more rounds remain
+    if (data.round < data.totalRounds) {
+        btnNext.textContent = 'Next Round';
+    } else {
+        btnNext.textContent = 'Back to Lobby';
+    }
 });
 
 function showView(view) {
@@ -99,7 +116,16 @@ btnCopy.addEventListener('click', () => {
 btnStart.addEventListener('click', () => {
     statusText.textContent = 'Starting...';
     btnStart.disabled = true;
-    socket.emit('start-game', (response) => {
+    totalRounds = parseInt(gameRoundsEl.value, 10);
+    currentRound = 0;
+
+    const settings = {
+        mode: gameModeEl.value,
+        game: gameModeEl.value === 'single' ? gamePickEl.value : null,
+        totalRounds: totalRounds,
+    };
+
+    socket.emit('start-game', settings, (response) => {
         if (response.error) {
             statusText.textContent = response.error;
             btnStart.disabled = false;
@@ -108,9 +134,21 @@ btnStart.addEventListener('click', () => {
 });
 
 btnNext.addEventListener('click', () => {
-    showView('lobby');
-    btnStart.disabled = false;
-    statusText.textContent = '';
+    if (currentRound < totalRounds) {
+        // Start next round
+        statusText.textContent = 'Starting next round...';
+        socket.emit('start-game', null, (response) => {
+            if (response.error) {
+                showView('lobby');
+                statusText.textContent = response.error;
+                btnStart.disabled = false;
+            }
+        });
+    } else {
+        showView('lobby');
+        btnStart.disabled = false;
+        statusText.textContent = '';
+    }
 });
 
 // Listen for benchmark results from iframe via postMessage

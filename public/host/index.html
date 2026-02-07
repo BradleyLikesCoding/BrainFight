@@ -23,6 +23,34 @@
           <ul class="players-list" id="players-list"></ul>
           <p class="bf-muted sm" id="players-empty">Waiting for players…</p>
         </div>
+        <div class="bf-card host-card">
+          <p class="bf-muted sm">Settings</p>
+          <div class="bf-row">
+            <label class="sm">Mode</label>
+            <select class="bf-input btn-sm" id="game-mode">
+              <option value="random">Random</option>
+              <option value="single">Single Game</option>
+            </select>
+          </div>
+          <div class="bf-row" id="game-pick-row" style="display:none;">
+            <label class="sm">Game</label>
+            <select class="bf-input btn-sm" id="game-pick">
+              <option value="reaction-speed">Reaction Speed</option>
+              <option value="typing-test">Typing Test</option>
+              <option value="number-memory">Number Memory</option>
+              <option value="verbal-memory">Verbal Memory</option>
+            </select>
+          </div>
+          <div class="bf-row">
+            <label class="sm">Rounds</label>
+            <select class="bf-input btn-sm" id="game-rounds">
+              <option value="1">1</option>
+              <option value="3" selected>3</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+        </div>
         <div class="host-actions">
           <button class="bf-button bf-button--primary btn-sm" id="btn-start" disabled>Start</button>
           <button class="bf-button btn-sm" onclick="window.open('/join','_blank')">Join</button>
@@ -33,9 +61,6 @@
 
     <!-- GAME VIEW (benchmark in iframe) -->
     <div class="bf-container" id="game-view" style="display:none;">
-      <header class="bf-header host-header">
-        <span class="host-title" id="game-title">Playing...</span>
-      </header>
       <main class="game-frame-wrap">
         <iframe id="game-frame" class="game-frame" src="about:blank" allow="autoplay"></iframe>
       </main>
