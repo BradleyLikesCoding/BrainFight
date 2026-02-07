@@ -1,0 +1,45 @@
+:root {
+  --ink: var(--black-bg, #0d1117);
+  --panel: var(--grey-bg, #161b22);
+  --accent: var(--blaze-orange, #fd5901);
+  --accent-soft: var(--princeton-orange, #f78104);
+  --sun: var(--orange, #faab36);
+  --aqua: var(--dark-cyan, #249ea0);
+  --text: #e6edf3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  color: var(--text);
+  background: var(--ink);
+}
+
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  padding: 10px 14px;
+  border: 1px solid var(--aqua);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.brand {
+  color: var(--accent);
+}
