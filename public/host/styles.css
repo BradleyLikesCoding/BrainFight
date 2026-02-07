@@ -1,8 +1,48 @@
-.host-topbar {
+/* Compact host layout */
+.host-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.host-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.host-code {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--bf-accent);
+}
+
+.host-main {
+    padding: 10px 16px;
+    gap: 10px;
+}
+
+.host-card {
+    padding: 10px 12px;
+    gap: 6px;
+}
+
+.host-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+}
+
+.sm {
+    font-size: 0.8rem;
+    margin: 0;
 }
 
 .players-list {
@@ -10,12 +50,13 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 10px;
+    gap: 4px;
 }
 
 .players-list li {
-    padding: 10px 12px;
+    padding: 6px 10px;
     border: 1px solid rgba(36, 158, 160, 0.35);
-    border-radius: 6px;
+    border-radius: 4px;
     background: rgba(22, 27, 34, 0.8);
+    font-size: 0.82rem;
 }
