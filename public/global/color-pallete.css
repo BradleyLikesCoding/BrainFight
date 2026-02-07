@@ -21,6 +21,7 @@
   font-family: "Space Grotesk", "Segoe UI", Tahoma, sans-serif;
   color: var(--bf-text);
   background: var(--bf-bg);
+  overflow-x: hidden;
 }
 
 .bf-container {
