@@ -91,6 +91,12 @@
   border-radius: 4px;
 }
 
+.bf-button:hover {
+  border-color: var(--bf-accent);
+  box-shadow: 0 0 0 2px rgba(240, 107, 26, 0.2);
+  transform: translateY(-1px);
+}
+
 .bf-button--primary {
   background: var(--bf-accent);
   border-color: var(--bf-accent);

@@ -1,12 +1,13 @@
 :root {
-  --ink: var(--black-bg, #0d1117);
-  --panel: var(--grey-bg, #161b22);
-  --accent: var(--blaze-orange, #fd5901);
-  --accent-soft: var(--princeton-orange, #f78104);
-  --sun: var(--orange, #faab36);
-  --aqua: var(--dark-cyan, #249ea0);
-  --text: #e6edf3;
-  --muted: #b2bdc9;
+  --ink: var(--bf-bg, var(--black-bg, #0d1117));
+  --panel: var(--bf-surface, var(--grey-bg, #161b22));
+  --accent: var(--bf-accent, var(--blaze-orange, #f06b1a));
+  --accent-soft: var(--bf-accent-strong, var(--princeton-orange, #f78104));
+  --sun: var(--bf-highlight, var(--orange, #f2a340));
+  --aqua: var(--bf-info, var(--dark-cyan, #249ea0));
+  --text: var(--bf-text, #e6edf3);
+  --muted: var(--bf-muted, #b2bdc9);
+  --radius: 4px;
 }
 
 * {
@@ -39,7 +40,7 @@ body {
   font-size: 0.65rem;
   padding: 8px 10px;
   border: 1px solid var(--aqua);
-  border-radius: 0;
+  border-radius: var(--radius);
   background: var(--panel);
 }
 
@@ -55,7 +56,7 @@ body {
 .stage {
   background: var(--panel);
   border: 2px solid var(--aqua);
-  border-radius: 0;
+  border-radius: var(--radius);
   min-height: 180px;
   display: grid;
   gap: 12px;
@@ -104,7 +105,7 @@ body {
   background: var(--panel);
   color: var(--text);
   border: 1px solid rgba(36, 158, 160, 0.35);
-  border-radius: 0;
+  border-radius: var(--radius);
   padding: 12px;
   font-size: 1rem;
   font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
@@ -125,7 +126,7 @@ body {
 .stat {
   background: var(--panel);
   border: 1px solid rgba(36, 158, 160, 0.35);
-  border-radius: 0;
+  border-radius: var(--radius);
   padding: 10px 12px;
 }
 
@@ -152,13 +153,19 @@ body {
   background: var(--panel);
   color: var(--text);
   border: 1px solid var(--aqua);
-  border-radius: 0;
+  border-radius: var(--radius);
   padding: 10px 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.75rem;
   cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(240, 107, 26, 0.2);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 720px) {

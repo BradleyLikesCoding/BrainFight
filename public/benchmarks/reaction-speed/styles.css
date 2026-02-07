@@ -1,12 +1,13 @@
 :root {
-  --ink: var(--black-bg, #0d1117);
-  --panel: var(--grey-bg, #161b22);
-  --accent: var(--blaze-orange, #fd5901);
-  --accent-soft: var(--princeton-orange, #f78104);
-  --sun: var(--orange, #faab36);
-  --aqua: var(--dark-cyan, #249ea0);
-  --text: #e6edf3;
-  --muted: #b2bdc9;
+  --ink: var(--bf-bg, var(--black-bg, #0d1117));
+  --panel: var(--bf-surface, var(--grey-bg, #161b22));
+  --accent: var(--bf-accent, var(--blaze-orange, #f06b1a));
+  --accent-soft: var(--bf-accent-strong, var(--princeton-orange, #f78104));
+  --sun: var(--bf-highlight, var(--orange, #f2a340));
+  --aqua: var(--bf-info, var(--dark-cyan, #249ea0));
+  --text: var(--bf-text, #e6edf3);
+  --muted: var(--bf-muted, #b2bdc9);
+  --radius: 4px;
 }
 
 * {
@@ -39,7 +40,7 @@ body {
   font-size: 0.65rem;
   padding: 8px 10px;
   border: 1px solid var(--aqua);
-  border-radius: 0;
+  border-radius: var(--radius);
   background: var(--panel);
 }
 
@@ -74,7 +75,7 @@ body {
 .stage {
   background: var(--panel);
   border: 2px solid var(--aqua);
-  border-radius: 0;
+  border-radius: var(--radius);
   min-height: 260px;
   display: grid;
   place-items: center;
@@ -116,7 +117,7 @@ body {
 .stat {
   background: var(--panel);
   border: 1px solid rgba(36, 158, 160, 0.35);
-  border-radius: 0;
+  border-radius: var(--radius);
   padding: 10px 12px;
 }
 
