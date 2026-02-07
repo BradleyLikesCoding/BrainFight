@@ -1,67 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Host a Battle</title>
-    <link rel="stylesheet" href="/global/color-pallete.css">
-    <link rel="stylesheet" href="/host/styles.css">
+    <link rel="stylesheet" href="../global/color-pallete.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
-</head>
-<body class="bf-body">
+  </head>
+  <body class="bf-body">
     <div class="bf-container">
-        <header class="bf-header">
-            <div class="host-topbar">
-                <h1>Host</h1>
-                <span class="bf-badge" id="HostCode">Loading Code...</span>
-            </div>
-        </header>
-        <main class="bf-main">
-            <div class="bf-card">
-                <p class="bf-muted">Share the code above to invite players.</p>
-                <button class="bf-button" onclick="location.href='/join'">Join the battle here!</button>
-            </div>
-            <div class="bf-card">
-                <p class="bf-muted">Players</p>
-                <ul class="players-list" id="players-list"></ul>
-                <p class="bf-muted" id="players-empty">Waiting for players to join...</p>
-            </div>
-        </main>
+      <header class="bf-header">
+        <h1>Host a Battle</h1>
+      </header>
+      <main class="bf-main">
+        <!-- Room code card -->
+        <div class="bf-card">
+          <p class="bf-muted">Your room code:</p>
+          <h2 class="host-code" id="host-code">Creating room...</h2>
+          <p class="bf-muted">Share this code with friends so they can join.</p>
+          <button class="bf-button bf-button--ghost" id="btn-copy">Copy Code</button>
+        </div>
+
+        <!-- Players card -->
+        <div class="bf-card">
+          <p class="bf-muted">Players in lobby (<span id="player-count">0</span>)</p>
+          <ul class="players-list" id="players-list"></ul>
+          <p class="bf-muted" id="players-empty">Waiting for players to join...</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="bf-card">
+          <div class="bf-row">
+            <button class="bf-button bf-button--primary" id="btn-start" disabled>Start Battle</button>
+            <button class="bf-button" onclick="location.href='/join'">Go to Join Page</button>
+          </div>
+          <p class="bf-muted" id="status-text"></p>
+        </div>
+      </main>
     </div>
-    <script>
-        const hostCodeEl = document.getElementById("HostCode");
-        const playersListEl = document.getElementById("players-list");
-        const playersEmptyEl = document.getElementById("players-empty");
-
-        const socket = io(window.location.hostname + ':3000');
-
-        const renderPlayers = (players) => {
-            playersListEl.innerHTML = "";
-            if (!players || players.length === 0) {
-                playersEmptyEl.style.display = "block";
-                return;
-            }
-            playersEmptyEl.style.display = "none";
-            players.forEach((name) => {
-                const item = document.createElement("li");
-                item.textContent = name;
-                playersListEl.appendChild(item);
-            });
-        };
-
-        socket.emit("host", (response) => {
-            if (response && response.pin) {
-                hostCodeEl.textContent = response.pin;
-                renderPlayers([]);
-            } else {
-                hostCodeEl.textContent = "Error";
-            }
-        });
-
-        socket.on("players-updated", (players) => {
-            renderPlayers(players);
-        });
-    </script>
-</body>
-<script type="text/javascript" src="/host/scripts.js"></script>
+    <script src="scripts.js"></script>
+  </body>
 </html>

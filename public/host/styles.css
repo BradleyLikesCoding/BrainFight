@@ -1,8 +1,9 @@
-.host-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+.host-code {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--bf-accent);
+    margin: 4px 0;
 }
 
 .players-list {
@@ -10,12 +11,13 @@
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 10px;
+    gap: 8px;
 }
 
 .players-list li {
-    padding: 10px 12px;
+    padding: 10px 14px;
     border: 1px solid rgba(36, 158, 160, 0.35);
     border-radius: 6px;
     background: rgba(22, 27, 34, 0.8);
+    font-size: 0.95rem;
 }
