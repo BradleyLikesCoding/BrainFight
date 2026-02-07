@@ -30,10 +30,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 const games = {};
 
 const BENCHMARKS = [
-  { id: 'reaction-speed', name: 'Reaction Speed', url: '/benchmarks/reaction-speed/index.html' },
-  { id: 'typing-test',    name: 'Typing Test',    url: '/benchmarks/typing-test/index.html' },
-  { id: 'number-memory',  name: 'Number Memory',  url: '/benchmarks/number-memory/index.html' },
-  { id: 'verbal-memory',  name: 'Verbal Memory',  url: '/benchmarks/verbal-memory/index.html' },
+  { id: 'reaction-speed', name: 'Reaction Speed', url: '/benchmarks/reaction-speed/index.html', lowerIsBetter: true },
+  { id: 'typing-test',    name: 'Typing Test',    url: '/benchmarks/typing-test/index.html',    lowerIsBetter: false },
+  { id: 'number-memory',  name: 'Number Memory',  url: '/benchmarks/number-memory/index.html',  lowerIsBetter: false },
+  { id: 'verbal-memory',  name: 'Verbal Memory',  url: '/benchmarks/verbal-memory/index.html',  lowerIsBetter: false },
 ];
 
 function generatePin() {
@@ -55,8 +55,9 @@ io.on('connection', (socket) => {
       players: [],        // [{name, socketId}]
       started: false,
       currentBenchmark: null,
-      scores: {},          // { socketId: { name, score } }
+      scores: {},
       round: 0,
+      cumulativeScores: {},
     };
     socket.join(`game-${pin}`);
     socket._hostedGame = pin;
@@ -95,7 +96,7 @@ io.on('connection', (socket) => {
   });
 
   // Host starts the game
-  socket.on('start-game', (settings, callback) => {
+  socket.on('start-game', (data, callback) => {
     const pin = socket._hostedGame;
     if (!pin || !games[pin]) {
       callback({ error: 'No game found' });
@@ -113,22 +114,22 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // Apply settings on first round, reuse on subsequent rounds
-    if (settings) {
+    // First round: apply full settings and reset cumulative scores
+    if (data && data.totalRounds !== undefined) {
       game.settings = {
-        mode: settings.mode || 'random',
-        game: settings.game || null,
-        totalRounds: settings.totalRounds || 3,
+        mode: data.mode || 'random',
+        totalRounds: parseInt(data.totalRounds, 10) || 3,
       };
       game.round = 0;
+      game.cumulativeScores = {};
     }
 
-    const s = game.settings || { mode: 'random', game: null, totalRounds: 3 };
+    const s = game.settings || { mode: 'random', totalRounds: 3 };
 
     // Pick benchmark based on mode
     let benchmark;
-    if (s.mode === 'single' && s.game) {
-      benchmark = BENCHMARKS.find(b => b.id === s.game) || pickBenchmark();
+    if (s.mode === 'choose' && data && data.game) {
+      benchmark = BENCHMARKS.find(b => b.id === data.game) || pickBenchmark();
     } else {
       benchmark = pickBenchmark();
     }
@@ -169,21 +170,54 @@ io.on('connection', (socket) => {
     console.log(`Score from ${name}: ${data.score} (${playerScores}/${expectedCount})`);
 
     if (playerScores >= expectedCount) {
-      // All players done, build scoreboard
-      const scoreboard = game.players.map(p => {
+      // Build round scoreboard sorted by benchmark type
+      const sorted = game.players.map(p => {
         const s = game.scores[p.socketId];
-        return { name: p.name, score: s ? s.score : null };
-      }).sort((a, b) => {
-        if (a.score === null) return 1;
-        if (b.score === null) return -1;
-        return a.score - b.score; // lower is better for most benchmarks
+        return { name: p.name, socketId: p.socketId, score: s ? s.score : null };
       });
+
+      if (game.currentBenchmark && game.currentBenchmark.lowerIsBetter) {
+        sorted.sort((a, b) => {
+          if (a.score === null) return 1;
+          if (b.score === null) return -1;
+          return a.score - b.score;
+        });
+      } else {
+        sorted.sort((a, b) => {
+          if (a.score === null) return 1;
+          if (b.score === null) return -1;
+          return b.score - a.score;
+        });
+      }
+
+      // Award placement points (1st gets N pts, 2nd N-1, etc.)
+      const n = sorted.length;
+      sorted.forEach((entry, i) => {
+        const points = entry.score !== null ? (n - i) : 0;
+        if (!game.cumulativeScores[entry.socketId]) {
+          game.cumulativeScores[entry.socketId] = { name: entry.name, points: 0 };
+        }
+        game.cumulativeScores[entry.socketId].points += points;
+      });
+
+      // Build cumulative leaderboard
+      const leaderboard = Object.values(game.cumulativeScores)
+        .sort((a, b) => b.points - a.points)
+        .map((entry, i) => ({ rank: i + 1, name: entry.name, points: entry.points }));
+
+      const roundScoreboard = sorted.map((entry, i) => ({
+        rank: i + 1,
+        name: entry.name,
+        score: entry.score,
+      }));
 
       io.to(`game-${pin}`).emit('round-results', {
         benchmark: game.currentBenchmark.name,
         round: game.round,
         totalRounds: (game.settings || {}).totalRounds || 3,
-        scoreboard,
+        roundScoreboard,
+        leaderboard,
+        mode: (game.settings || {}).mode || 'random',
       });
 
       game.started = false;

@@ -31,7 +31,7 @@
             <label class="sm">Mode</label>
             <select class="bf-input btn-sm" id="game-mode">
               <option value="random">Random</option>
-              <option value="single">Single Game</option>
+              <option value="choose">Choose</option>
             </select>
           </div>
           <div class="bf-row" id="game-pick-row" style="display:none;">
@@ -45,12 +45,7 @@
           </div>
           <div class="bf-row">
             <label class="sm">Rounds</label>
-            <select class="bf-input btn-sm" id="game-rounds">
-              <option value="1">1</option>
-              <option value="3" selected>3</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-            </select>
+            <input type="number" class="bf-input btn-sm" id="game-rounds" min="1" max="99" value="3" style="width:60px;">
           </div>
         </div>
         <div class="host-actions">
@@ -70,17 +65,41 @@
 
     <!-- RESULTS VIEW -->
     <div class="bf-container" id="results-view" style="display:none;">
-      <header class="bf-header host-header">
-        <span class="host-title" id="result-title">Results</span>
-      </header>
-      <main class="bf-main host-main">
-        <div class="bf-card host-card">
-          <ul class="players-list" id="results-list"></ul>
+      <div class="leaderboard-wrap">
+        <div class="leaderboard-modal">
+          <section class="leaderboard-hero">
+            <div class="bf-row" style="align-items:center;gap:12px;">
+              <span class="bf-badge" id="round-badge">Round 1/3</span>
+              <h2 class="leaderboard-title" id="result-title">Results</h2>
+            </div>
+          </section>
+          <section>
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th class="th-score">Points</th>
+                  <th class="th-score">Round</th>
+                </tr>
+              </thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </section>
+          <div class="leaderboard-actions">
+            <div class="bf-row" id="next-game-row" style="display:none;align-items:center;gap:8px;">
+              <label class="sm">Next Game</label>
+              <select class="bf-input btn-sm" id="next-game-pick">
+                <option value="reaction-speed">Reaction Speed</option>
+                <option value="typing-test">Typing Test</option>
+                <option value="number-memory">Number Memory</option>
+                <option value="verbal-memory">Verbal Memory</option>
+              </select>
+            </div>
+            <button class="bf-button bf-button--primary btn-sm" id="btn-next">Next Round</button>
+          </div>
         </div>
-        <div class="host-actions">
-          <button class="bf-button bf-button--primary btn-sm" id="btn-next">Back to Lobby</button>
-        </div>
-      </main>
+      </div>
     </div>
 
     <script src="/host/scripts.js"></script>
