@@ -9,6 +9,8 @@
       :root {
         color-scheme: light;
         --text-on-dark: #f7f7f7;
+        --surface-dark: #262627;
+        --surface-dark-2: #1f1f20;
       }
 
       * {
@@ -32,8 +34,8 @@
 
       .panel {
         width: min(780px, 100%);
-        background: #ffffff;
-        color: var(--color-secondary);
+        background: var(--surface-dark);
+        color: var(--text-on-dark);
         border-radius: 16px;
         padding: 28px;
         border: 2px solid var(--color-tertiary);
@@ -64,7 +66,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        transition: background 0.2s ease;
+        transition: none;
       }
 
       .reaction-area.waiting {
@@ -82,11 +84,11 @@
         gap: 16px;
         margin-top: 16px;
         font-size: 14px;
-        color: #4f4f4f;
+        color: #c7c7c7;
       }
 
       .stat-row span {
-        background: #f1f3f4;
+        background: var(--surface-dark-2);
         padding: 8px 12px;
         border-radius: 999px;
       }
