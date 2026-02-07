@@ -16,7 +16,6 @@
       place-items: center;
       padding: 24px;
       z-index: 1000;
-      animation: overlay-fade 220ms ease-out;
     }
 
     .leaderboard-modal {
@@ -28,7 +27,6 @@
       display: grid;
       gap: 16px;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      animation: modal-pop 260ms ease-out;
     }
 
     .leaderboard-hero {
@@ -86,7 +84,21 @@
       text-align: center;
     }
 
-    .leaderboard-table .username {
+    .leaderboard-table .user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .leaderboard-table .user .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(36, 158, 160, 0.4);
+    }
+
+    .leaderboard-table .user .username {
       font-weight: 600;
     }
 
@@ -131,27 +143,10 @@
       .leaderboard-table .rank {
         width: 46px;
       }
-    }
 
-    @keyframes overlay-fade {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes modal-pop {
-      from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.98);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+      .leaderboard-table .user .avatar {
+        width: 36px;
+        height: 36px;
       }
     }
   </style>
@@ -164,6 +159,7 @@
           <span class="bf-badge">Leaderboard</span>
           <h1 class="leaderboard-title">BrainFight Standings</h1>
         </div>
+        <p class="leaderboard-subtitle">Latest results between tests. Dummy data for now.</p>
         <p class="leaderboard-subtitle" id="countdown">Next test starts in 5s</p>
       </section>
 
@@ -179,18 +175,43 @@
           <tbody>
             <tr class="rank-1">
               <td class="rank">1</td>
-              <td class="username">Nova</td>
+              <td class="user">
+                <img src="https://placehold.co/45?text=NR" alt="Nova avatar" class="avatar">
+                <span class="username">Nova</span>
+              </td>
               <td class="score">25,480</td>
             </tr>
             <tr class="rank-2">
               <td class="rank">2</td>
-              <td class="username">Axel</td>
+              <td class="user">
+                <img src="https://placehold.co/45?text=AX" alt="Axel avatar" class="avatar">
+                <span class="username">Axel</span>
+              </td>
               <td class="score">23,910</td>
             </tr>
             <tr class="rank-3">
               <td class="rank">3</td>
-              <td class="username">Mira</td>
+              <td class="user">
+                <img src="https://placehold.co/45?text=MI" alt="Mira avatar" class="avatar">
+                <span class="username">Mira</span>
+              </td>
               <td class="score">22,500</td>
+            </tr>
+            <tr>
+              <td class="rank">4</td>
+              <td class="user">
+                <img src="https://placehold.co/45?text=RO" alt="Rowan avatar" class="avatar">
+                <span class="username">Rowan</span>
+              </td>
+              <td class="score">21,880</td>
+            </tr>
+            <tr>
+              <td class="rank">5</td>
+              <td class="user">
+                <img src="https://placehold.co/45?text=HA" alt="Harper avatar" class="avatar">
+                <span class="username">Harper</span>
+              </td>
+              <td class="score">20,150</td>
             </tr>
           </tbody>
         </table>
