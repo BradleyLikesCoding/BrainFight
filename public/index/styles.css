@@ -70,3 +70,16 @@ footer p {
     font-size: 0.9em;
     margin: 0;
 }
+
+.home-main {
+  text-align: center;
+  justify-items: center;
+}
+
+.home-main .bf-card {
+  width: min(720px, 100%);
+}
+
+.home-actions {
+  justify-content: center;
+}

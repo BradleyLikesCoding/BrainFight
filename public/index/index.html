@@ -4,21 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrainFight - Human battles</title>
+    <link rel="stylesheet" href="../global/color-pallete.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <container>
-        <header>
-            <h1>Welcome to BrainFight</h1>
+<body class="bf-body">
+    <div class="bf-container">
+        <header class="bf-header">
+            <div class="bf-row">
+                <span class="bf-badge">BrainFight</span>
+                <h1>Welcome to BrainFight</h1>
+            </div>
         </header>
-        <main>
-            <p>This website is all about battling friends and finding out who the superior human is!</p>
-            <button onclick="location.href='/host'">Start a test.</button>
-            <button onclick="location.href='/join'">Join a test.</button>
+        <main class="bf-main home-main">
+            <div class="bf-card">
+                <p class="bf-muted">This website is all about battling friends and finding out who the superior human is!</p>
+                <div class="bf-row home-actions">
+                    <button class="bf-button bf-button--primary" onclick="location.href='/host'">Start a test</button>
+                    <button class="bf-button" onclick="location.href='/join'">Join a test</button>
+                </div>
+            </div>
         </main>
-        <footer>
+        <footer class="bf-footer">
             <p>&copy; Copyright 2026 BrainFight.</p>
         </footer>
-    </container>
+    </div>
 </body>
 </html>
