@@ -23,7 +23,8 @@ const state = {
   synced: false,
   showAt: null,
   ready: false,
-  advanceTimeoutId: null
+  advanceTimeoutId: null,
+  reported: false
 };
 
 const setPhase = (phase) => {
@@ -125,6 +126,7 @@ const startGame = (autoRound = true) => {
   state.round = 0;
   state.digits = startingDigits;
   state.lives = maxLives;
+  state.reported = false;
   updateStats();
   stageStartButton.classList.add("hidden");
   restartButton.classList.add("hidden");
@@ -144,12 +146,15 @@ const endGame = () => {
   stageStartButton.classList.add("hidden");
 
   // Report score to parent (for multiplayer)
-  try {
-    window.parent.postMessage(
-      { type: 'BENCHMARK_COMPLETE', value: finalRound },
-      '*'
-    );
-  } catch (e) {}
+  if (!state.reported) {
+    state.reported = true;
+    try {
+      window.parent.postMessage(
+        { type: 'BENCHMARK_COMPLETE', value: finalRound },
+        '*'
+      );
+    } catch (e) {}
+  }
 };
 
 const showResult = (isCorrect) => {

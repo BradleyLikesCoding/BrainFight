@@ -50,13 +50,18 @@ socket.on('game-start', (data) => {
 // Round results — show leaderboard
 socket.on('round-results', (data) => {
     showView('results');
-    document.getElementById('round-badge').textContent = 'Round ' + data.round + '/' + data.totalRounds;
-    document.getElementById('result-title').textContent = data.benchmark;
+    const isFinal = data.round >= data.totalRounds;
+    document.getElementById('round-badge').textContent = isFinal
+        ? 'Final'
+        : 'Round ' + data.round + '/' + data.totalRounds;
+    document.getElementById('result-title').textContent = isFinal
+        ? 'Final Results'
+        : data.benchmark + ' — Round ' + data.round + '/' + data.totalRounds;
     const tbody = document.getElementById('results-body');
     tbody.innerHTML = '';
-    data.leaderboard.forEach((entry, i) => {
-        const roundEntry = data.roundScoreboard.find(r => r.name === entry.name);
-        const roundScore = roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—';
+    (data.leaderboard || []).forEach((entry, i) => {
+        const roundEntry = (data.roundScoreboard || []).find(r => r.name === entry.name);
+        const roundScore = isFinal ? '—' : (roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—');
         const tr = document.createElement('tr');
         if (i < 3) tr.classList.add('rank-' + (i + 1));
         tr.innerHTML =

@@ -72,14 +72,15 @@ socket.on('round-results', (data) => {
     currentRound = data.round;
     totalRounds = data.totalRounds;
     currentMode = data.mode || 'random';
-    roundBadge.textContent = 'Round ' + data.round + '/' + data.totalRounds;
-    resultTitle.textContent = data.benchmark;
+    const isFinal = data.round >= data.totalRounds;
+    roundBadge.textContent = isFinal ? 'Final' : 'Round ' + data.round + '/' + data.totalRounds;
+    resultTitle.textContent = isFinal ? 'Final Results' : data.benchmark;
 
     // Render leaderboard table
     resultsBody.innerHTML = '';
-    data.leaderboard.forEach((entry, i) => {
-        const roundEntry = data.roundScoreboard.find(r => r.name === entry.name);
-        const roundScore = roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—';
+    (data.leaderboard || []).forEach((entry, i) => {
+        const roundEntry = (data.roundScoreboard || []).find(r => r.name === entry.name);
+        const roundScore = isFinal ? '—' : (roundEntry ? (roundEntry.score !== null ? roundEntry.score : 'DNF') : '—');
         const tr = document.createElement('tr');
         if (i < 3) tr.classList.add('rank-' + (i + 1));
         tr.innerHTML =
@@ -91,7 +92,7 @@ socket.on('round-results', (data) => {
     });
 
     // Show/hide game picker and next button
-    if (data.round < data.totalRounds) {
+    if (!isFinal) {
         btnNext.textContent = 'Next Round';
         nextGameRow.style.display = currentMode === 'choose' ? 'flex' : 'none';
     } else {

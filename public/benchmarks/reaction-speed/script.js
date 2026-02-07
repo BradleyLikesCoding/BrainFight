@@ -23,6 +23,7 @@ const state = {
     goAt: null,
     endAt: null,
   },
+  reported: false,
 };
 
 const modes = ["idle", "waiting", "go", "false", "result", "summary"];
@@ -56,6 +57,17 @@ const updateStats = () => {
   const sum = state.times.reduce((total, value) => total + value, 0);
   const avg = Math.round(sum / state.times.length);
   averageTime.textContent = `${avg} ms`;
+};
+
+const reportScoreOnce = (score) => {
+  if (state.reported) {
+    return;
+  }
+
+  state.reported = true;
+  try {
+    window.parent.postMessage({ type: 'BENCHMARK_COMPLETE', value: score }, '*');
+  } catch (e) {}
 };
 
 const resetRun = () => {
@@ -156,6 +168,8 @@ const finalizeReaction = (reaction) => {
     const avg = Math.round(sum / state.times.length);
     const best = Math.min(...state.times);
     const worst = Math.max(...state.times);
+
+    reportScoreOnce(avg);
 
     setMode("summary");
     setStageText(

@@ -22,7 +22,8 @@ const state = {
   finished: false,
   startTime: 0,
   timerId: null,
-  startAt: null
+  startAt: null,
+  reported: false
 };
 
 const choosePrompt = (index = null) => {
@@ -117,6 +118,17 @@ const finishRun = () => {
   updateStats();
   statusEl.textContent = "Complete";
   inputEl.disabled = true;
+
+  if (!state.reported) {
+    const elapsedMs = Date.now() - state.startTime;
+    const minutes = elapsedMs / 60000;
+    const typed = inputEl.value.length;
+    const wpm = minutes > 0 ? Math.round((typed / 5) / minutes) : 0;
+    state.reported = true;
+    try {
+      window.parent.postMessage({ type: 'BENCHMARK_COMPLETE', value: wpm }, '*');
+    } catch (e) {}
+  }
 };
 
 const normalizeInput = () => {
@@ -177,6 +189,7 @@ const resetRun = (promptIndex = null) => {
   state.started = false;
   state.finished = false;
   state.startAt = null;
+  state.reported = false;
   stopTimer();
   choosePrompt(promptIndex);
   inputEl.value = "";

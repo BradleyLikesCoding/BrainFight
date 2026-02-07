@@ -199,7 +199,8 @@ const state = {
   lives: 3,
   seen: new Set(),
   currentWord: "",
-  active: false
+  active: false,
+  reported: false
 };
 
 const updateStats = () => {
@@ -230,6 +231,7 @@ const startGame = () => {
   state.lives = 3;
   state.seen = new Set();
   state.active = true;
+  state.reported = false;
   restartButton.classList.add("hidden");
   startButton.classList.add("hidden");
   helperEl.textContent = "Seen it before or new?";
@@ -244,6 +246,15 @@ const endGame = () => {
   statusEl.textContent = "Game over";
   helperEl.textContent = "Click Restart to try again";
   restartButton.classList.remove("hidden");
+  if (!state.reported) {
+    state.reported = true;
+    try {
+      window.parent.postMessage(
+        { type: 'BENCHMARK_COMPLETE', value: state.score },
+        '*'
+      );
+    } catch (e) {}
+  }
 };
 
 const handleChoice = (choice) => {
