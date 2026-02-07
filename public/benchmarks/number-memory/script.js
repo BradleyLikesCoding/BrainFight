@@ -2,26 +2,28 @@ const numberEl = document.getElementById("number");
 const statusEl = document.getElementById("status");
 const answerEl = document.getElementById("answer");
 const submitButton = document.getElementById("submit-button");
-const readyButton = document.getElementById("ready-button");
 const stageStartButton = document.getElementById("stage-start");
-const nextButton = document.getElementById("next-button");
 const restartButton = document.getElementById("restart-button");
 const roundEl = document.getElementById("round");
 const digitsEl = document.getElementById("digits");
+const livesEl = document.getElementById("lives");
 const stage = document.getElementById("stage");
 
 const memorizationMs = 30000;
 const startingDigits = 3;
+const maxLives = 3;
 
 const state = {
   round: 0,
   digits: startingDigits,
+  lives: maxLives,
   current: "",
   phase: "idle",
   timeoutId: null,
   synced: false,
   showAt: null,
-  ready: false
+  ready: false,
+  advanceTimeoutId: null
 };
 
 const setPhase = (phase) => {
@@ -31,13 +33,15 @@ const setPhase = (phase) => {
 const updateStats = () => {
   roundEl.textContent = state.round;
   digitsEl.textContent = state.digits;
+  livesEl.textContent = state.lives;
 };
 
 const setReadyState = (isReady) => {
   state.ready = isReady;
 
   if (isReady) {
-    readyButton.classList.add("hidden");
+    numberEl.textContent = "";
+    statusEl.textContent = "Type the number";
     answerEl.disabled = false;
     submitButton.disabled = false;
     answerEl.focus();
@@ -67,36 +71,34 @@ const generateNumber = (digits) => {
 const showNumber = (forcedNumber = null) => {
   state.current = forcedNumber ?? generateNumber(state.digits);
   numberEl.textContent = state.current;
-  statusEl.textContent = "Memorize";
+  statusEl.textContent = "Memorize then press Space";
   answerEl.value = "";
   answerEl.disabled = true;
   submitButton.disabled = true;
-  setPhase("show");
+  setPhase("ready");
 
   if (state.timeoutId) {
     window.clearTimeout(state.timeoutId);
   }
 
   state.timeoutId = window.setTimeout(() => {
-    numberEl.textContent = "";
-    statusEl.textContent = "Press Ready to type";
-    readyButton.classList.remove("hidden");
-    setPhase("ready");
-    setReadyState(false);
+    if (!state.ready) {
+      setReadyState(true);
+    }
   }, memorizationMs);
 };
 
 const startRound = () => {
   state.round += 1;
   updateStats();
-  readyButton.classList.add("hidden");
+  state.ready = false;
   showNumber();
 };
 
 const startRoundWithNumber = (number, showAtMs = null) => {
   state.round += 1;
   updateStats();
-  readyButton.classList.add("hidden");
+  state.ready = false;
 
   if (showAtMs) {
     const delay = Math.max(showAtMs - Date.now(), 0);
@@ -115,11 +117,10 @@ const startRoundWithNumber = (number, showAtMs = null) => {
 const startGame = (autoRound = true) => {
   state.round = 0;
   state.digits = startingDigits;
+  state.lives = maxLives;
   updateStats();
   stageStartButton.classList.add("hidden");
-  nextButton.classList.add("hidden");
   restartButton.classList.add("hidden");
-  readyButton.classList.add("hidden");
   setReadyState(false);
   if (autoRound) {
     startRound();
@@ -131,8 +132,6 @@ const endGame = () => {
   statusEl.textContent = "Game over";
   numberEl.textContent = `Answer was ${state.current}`;
   setReadyState(false);
-  readyButton.classList.add("hidden");
-  nextButton.classList.add("hidden");
   restartButton.classList.remove("hidden");
   stageStartButton.classList.add("hidden");
 };
@@ -144,12 +143,32 @@ const showResult = (isCorrect) => {
     state.digits = nextDigitLength(state.digits);
     answerEl.disabled = true;
     submitButton.disabled = true;
-    nextButton.classList.remove("hidden");
+    scheduleNextRound();
   } else {
-    endGame();
+    state.lives -= 1;
+    statusEl.textContent = "Wrong";
+    numberEl.textContent = `Answer was ${state.current}`;
+    if (state.lives <= 0) {
+      endGame();
+      return;
+    }
+    scheduleNextRound();
   }
 
   updateStats();
+};
+
+const scheduleNextRound = () => {
+  if (state.advanceTimeoutId) {
+    window.clearTimeout(state.advanceTimeoutId);
+  }
+
+  state.advanceTimeoutId = window.setTimeout(() => {
+    state.advanceTimeoutId = null;
+    if (state.phase !== "end") {
+      startRound();
+    }
+  }, 1200);
 };
 
 const submitAnswer = () => {
@@ -168,14 +187,25 @@ stage.addEventListener("click", () => {
     startGame();
   }
 });
-readyButton.addEventListener("click", () => setReadyState(true));
-nextButton.addEventListener("click", startRound);
 restartButton.addEventListener("click", startGame);
 submitButton.addEventListener("click", submitAnswer);
 answerEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     submitAnswer();
   }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") {
+    return;
+  }
+
+  if (state.phase !== "ready") {
+    return;
+  }
+
+  event.preventDefault();
+  setReadyState(true);
 });
 
 updateStats();
