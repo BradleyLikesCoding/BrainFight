@@ -9,7 +9,9 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body class="bf-body">
-    <div class="bf-container">
+
+    <!-- LOBBY VIEW -->
+    <div class="bf-container" id="lobby-view">
       <header class="bf-header host-header">
         <span class="host-title">Host</span>
         <span class="host-code" id="host-code">...</span>
@@ -23,11 +25,37 @@
         </div>
         <div class="host-actions">
           <button class="bf-button bf-button--primary btn-sm" id="btn-start" disabled>Start</button>
-          <button class="bf-button btn-sm" onclick="window.open('/join', '_blank')">Join</button>
+          <button class="bf-button btn-sm" onclick="window.open('/join','_blank')">Join</button>
           <span class="bf-muted sm" id="status-text"></span>
         </div>
       </main>
     </div>
-</body>
-<script src="/host/scripts.js"></script>
+
+    <!-- GAME VIEW (benchmark in iframe) -->
+    <div class="bf-container" id="game-view" style="display:none;">
+      <header class="bf-header host-header">
+        <span class="host-title" id="game-title">Playing...</span>
+      </header>
+      <main class="game-frame-wrap">
+        <iframe id="game-frame" class="game-frame" src="about:blank" allow="autoplay"></iframe>
+      </main>
+    </div>
+
+    <!-- RESULTS VIEW -->
+    <div class="bf-container" id="results-view" style="display:none;">
+      <header class="bf-header host-header">
+        <span class="host-title" id="result-title">Results</span>
+      </header>
+      <main class="bf-main host-main">
+        <div class="bf-card host-card">
+          <ul class="players-list" id="results-list"></ul>
+        </div>
+        <div class="host-actions">
+          <button class="bf-button bf-button--primary btn-sm" id="btn-next">Back to Lobby</button>
+        </div>
+      </main>
+    </div>
+
+    <script src="/host/scripts.js"></script>
+  </body>
 </html>

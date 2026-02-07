@@ -6,9 +6,18 @@
     <title>Join a Battle</title>
     <link rel="stylesheet" href="/global/color-pallete.css">
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+      .game-frame-wrap { flex:1; display:flex; }
+      .game-frame { flex:1; width:100%; border:none; background:var(--bf-bg); }
+      .results-list { list-style:none; padding:0; margin:0; display:grid; gap:6px; }
+      .results-list li { padding:6px 10px; border:1px solid rgba(36,158,160,0.35); border-radius:4px; background:rgba(22,27,34,0.8); font-size:0.9rem; }
+      .lobby-players { list-style:none; padding:0; margin:0; display:grid; gap:6px; }
+      .lobby-players li { padding:6px 10px; border:1px solid rgba(36,158,160,0.35); border-radius:4px; background:rgba(22,27,34,0.8); font-size:0.9rem; }
+    </style>
   </head>
   <body class="bf-body">
-    <!-- Join form -->
+
+    <!-- JOIN FORM -->
     <div class="bf-container" id="join-form">
       <header class="bf-header">
         <h1>Join a Battle</h1>
@@ -25,17 +34,40 @@
       </main>
     </div>
 
-    <!-- Lobby (shown after joining) -->
+    <!-- LOBBY -->
     <div class="bf-container" id="lobby" style="display:none;">
       <header class="bf-header">
         <h1>Lobby</h1>
       </header>
       <main class="bf-main">
         <div class="bf-card">
-          <p class="bf-muted">Waiting for the host to start the game...</p>
-          <p class="bf-muted">Players in room:</p>
-          <ul id="lobby-players" style="list-style:none;padding:0;margin:0;display:grid;gap:6px;"></ul>
+          <p class="bf-muted">Waiting for the host to start...</p>
+          <p class="bf-muted">Players:</p>
+          <ul class="lobby-players" id="lobby-players"></ul>
         </div>
+      </main>
+    </div>
+
+    <!-- GAME VIEW -->
+    <div class="bf-container" id="game-view" style="display:none;">
+      <header class="bf-header">
+        <h1 id="game-title">Playing...</h1>
+      </header>
+      <main class="game-frame-wrap">
+        <iframe id="game-frame" class="game-frame" src="about:blank" allow="autoplay"></iframe>
+      </main>
+    </div>
+
+    <!-- RESULTS VIEW -->
+    <div class="bf-container" id="results-view" style="display:none;">
+      <header class="bf-header">
+        <h1 id="result-title">Results</h1>
+      </header>
+      <main class="bf-main">
+        <div class="bf-card">
+          <ul class="results-list" id="results-list"></ul>
+        </div>
+        <p class="bf-muted">Waiting for the host to start the next round...</p>
       </main>
     </div>
 

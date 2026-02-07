@@ -29,22 +29,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const games = {};
 
+const BENCHMARKS = [
+  { id: 'reaction-speed', name: 'Reaction Speed', url: '/benchmarks/reaction-speed/index.html' },
+  { id: 'typing-test',    name: 'Typing Test',    url: '/benchmarks/typing-test/index.html' },
+  { id: 'number-memory',  name: 'Number Memory',  url: '/benchmarks/number-memory/index.html' },
+  { id: 'verbal-memory',  name: 'Verbal Memory',  url: '/benchmarks/verbal-memory/index.html' },
+];
+
 function generatePin() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+function pickBenchmark() {
+  return BENCHMARKS[Math.floor(Math.random() * BENCHMARKS.length)];
+}
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
+
   socket.on('host', (callback) => {
     const pin = generatePin();
     games[pin] = {
       pin,
       host: socket.id,
-      players: [],
-      started: false
+      players: [],        // [{name, socketId}]
+      started: false,
+      currentBenchmark: null,
+      scores: {},          // { socketId: { name, score } }
+      round: 0,
     };
     socket.join(`game-${pin}`);
+    socket._hostedGame = pin;
     callback({ pin });
     console.log('Game created:', pin);
   });
@@ -52,31 +67,109 @@ io.on('connection', (socket) => {
   socket.on('join', (data, callback) => {
     const { pin, name } = data;
     const game = games[pin];
-    
+
     if (!game) {
       callback({ error: 'Game not found' });
       return;
     }
 
-    // Prevent duplicate joins by same socket
     if (socket._joinedGame) {
       callback({ error: 'You have already joined a game' });
       return;
     }
 
-    // Prevent duplicate name in same game
-    if (game.players.includes(name)) {
+    const nameTaken = game.players.some(p => p.name === name);
+    if (nameTaken) {
       callback({ error: 'That name is already taken' });
       return;
     }
-    
-    game.players.push(name);
+
+    game.players.push({ name, socketId: socket.id });
     socket.join(`game-${pin}`);
     socket._joinedGame = pin;
     socket._playerName = name;
-    
-    io.to(`game-${pin}`).emit('players-updated', game.players);
-    callback({ success: true, players: game.players });
+
+    const playerNames = game.players.map(p => p.name);
+    io.to(`game-${pin}`).emit('players-updated', playerNames);
+    callback({ success: true, players: playerNames });
+  });
+
+  // Host starts the game
+  socket.on('start-game', (callback) => {
+    const pin = socket._hostedGame;
+    if (!pin || !games[pin]) {
+      callback({ error: 'No game found' });
+      return;
+    }
+
+    const game = games[pin];
+    if (game.host !== socket.id) {
+      callback({ error: 'Only the host can start' });
+      return;
+    }
+
+    if (game.players.length === 0) {
+      callback({ error: 'Need at least 1 player' });
+      return;
+    }
+
+    const benchmark = pickBenchmark();
+    game.currentBenchmark = benchmark;
+    game.scores = {};
+    game.round += 1;
+    game.started = true;
+
+    console.log(`Game ${pin} round ${game.round}: ${benchmark.name}`);
+
+    // Tell everyone (host + players) to load the benchmark
+    io.to(`game-${pin}`).emit('game-start', {
+      benchmark: benchmark,
+      round: game.round,
+    });
+
+    callback({ success: true, benchmark });
+  });
+
+  // Player or host submits a score
+  socket.on('submit-score', (data) => {
+    const pin = socket._joinedGame || socket._hostedGame;
+    if (!pin || !games[pin]) return;
+
+    const game = games[pin];
+    const name = socket._playerName || 'Host';
+
+    game.scores[socket.id] = {
+      name: name,
+      score: data.score,
+    };
+
+    // Check if all players submitted (host doesn't count as a player)
+    const expectedCount = game.players.length;
+    const playerScores = game.players.filter(p => game.scores[p.socketId]).length;
+
+    console.log(`Score from ${name}: ${data.score} (${playerScores}/${expectedCount})`);
+
+    if (playerScores >= expectedCount) {
+      // All players done, build scoreboard
+      const scoreboard = game.players.map(p => {
+        const s = game.scores[p.socketId];
+        return { name: p.name, score: s ? s.score : null };
+      }).sort((a, b) => {
+        if (a.score === null) return 1;
+        if (b.score === null) return -1;
+        return a.score - b.score; // lower is better for most benchmarks
+      });
+
+      io.to(`game-${pin}`).emit('round-results', {
+        benchmark: game.currentBenchmark.name,
+        round: game.round,
+        scoreboard,
+      });
+
+      game.started = false;
+      game.currentBenchmark = null;
+      game.scores = {};
+    }
   });
 
   // Remove player on disconnect
@@ -84,8 +177,17 @@ io.on('connection', (socket) => {
     if (socket._joinedGame) {
       const game = games[socket._joinedGame];
       if (game) {
-        game.players = game.players.filter(n => n !== socket._playerName);
-        io.to(`game-${socket._joinedGame}`).emit('players-updated', game.players);
+        game.players = game.players.filter(p => p.socketId !== socket.id);
+        const playerNames = game.players.map(p => p.name);
+        io.to(`game-${socket._joinedGame}`).emit('players-updated', playerNames);
+      }
+    }
+    // Clean up hosted game if host disconnects
+    if (socket._hostedGame) {
+      const game = games[socket._hostedGame];
+      if (game) {
+        io.to(`game-${socket._hostedGame}`).emit('game-ended', { reason: 'Host disconnected' });
+        delete games[socket._hostedGame];
       }
     }
   });

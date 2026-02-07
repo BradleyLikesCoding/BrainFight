@@ -22,8 +22,7 @@ function joinBattle() {
             document.getElementById('btn-join').disabled = false;
         } else {
             joined = true;
-            document.getElementById('join-form').style.display = 'none';
-            document.getElementById('lobby').style.display = '';
+            showView('lobby');
             renderLobbyPlayers(response.players);
         }
     });
@@ -33,13 +32,52 @@ socket.on('players-updated', (players) => {
     if (joined) renderLobbyPlayers(players);
 });
 
+// Host started the game — load benchmark
+socket.on('game-start', (data) => {
+    showView('game');
+    document.getElementById('game-title').textContent = data.benchmark.name;
+    document.getElementById('game-frame').src = data.benchmark.url;
+});
+
+// Round results
+socket.on('round-results', (data) => {
+    showView('results');
+    document.getElementById('result-title').textContent = data.benchmark + ' — Round ' + data.round;
+    const ul = document.getElementById('results-list');
+    ul.innerHTML = '';
+    data.scoreboard.forEach((entry, i) => {
+        const li = document.createElement('li');
+        li.textContent = '#' + (i + 1) + '  ' + entry.name + '  —  ' + (entry.score !== null ? entry.score : 'DNF');
+        ul.appendChild(li);
+    });
+});
+
+// Host disconnected
+socket.on('game-ended', (data) => {
+    alert(data.reason || 'Game ended');
+    location.reload();
+});
+
+// Listen for benchmark results from iframe via postMessage
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'BENCHMARK_COMPLETE') {
+        socket.emit('submit-score', { score: event.data.value });
+    }
+});
+
+function showView(view) {
+    document.getElementById('join-form').style.display   = view === 'join'    ? '' : 'none';
+    document.getElementById('lobby').style.display       = view === 'lobby'   ? '' : 'none';
+    document.getElementById('game-view').style.display   = view === 'game'    ? '' : 'none';
+    document.getElementById('results-view').style.display = view === 'results' ? '' : 'none';
+}
+
 function renderLobbyPlayers(players) {
     const ul = document.getElementById('lobby-players');
     ul.innerHTML = '';
     players.forEach((p) => {
         const li = document.createElement('li');
         li.textContent = p;
-        li.style.cssText = 'padding:6px 10px;border:1px solid rgba(36,158,160,0.35);border-radius:4px;background:rgba(22,27,34,0.8);font-size:0.9rem;';
         ul.appendChild(li);
     });
 }
