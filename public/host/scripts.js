@@ -52,8 +52,12 @@ socket.on('connect_error', () => {
     statusText.textContent = 'Cannot reach server.';
 });
 
-socket.on('players-updated', (players) => {
-    renderPlayers(players);
+socket.on('players-updated', (data) => {
+    if (Array.isArray(data)) {
+        renderPlayers(data);
+        return;
+    }
+    renderPlayers(data.players || [], data.hostName);
 });
 
 // Game started — show the benchmark
@@ -102,19 +106,30 @@ function showView(view) {
     resultsView.style.display = view === 'results' ? '' : 'none';
 }
 
-function renderPlayers(players) {
+function renderPlayers(players, hostName) {
     playersList.innerHTML = '';
 
     if (!players || players.length === 0) {
         playersEmpty.style.display = 'block';
         playerCount.textContent = '0';
         btnStart.disabled = true;
+        if (hostName) {
+            const li = document.createElement('li');
+            li.textContent = hostName + ' (Host)';
+            playersList.appendChild(li);
+        }
         return;
     }
 
     playersEmpty.style.display = 'none';
     playerCount.textContent = players.length;
     btnStart.disabled = false;
+
+    if (hostName) {
+        const li = document.createElement('li');
+        li.textContent = hostName + ' (Host)';
+        playersList.appendChild(li);
+    }
 
     players.forEach((name) => {
         const li = document.createElement('li');

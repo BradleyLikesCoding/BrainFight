@@ -23,13 +23,18 @@ function joinBattle() {
         } else {
             joined = true;
             showView('lobby');
-            renderLobbyPlayers(response.players);
+            renderLobbyPlayers(response.players, response.hostName);
         }
     });
 }
 
-socket.on('players-updated', (players) => {
-    if (joined) renderLobbyPlayers(players);
+socket.on('players-updated', (data) => {
+    if (!joined) return;
+    if (Array.isArray(data)) {
+        renderLobbyPlayers(data);
+        return;
+    }
+    renderLobbyPlayers(data.players || [], data.hostName);
 });
 
 // Host started the game — load benchmark
@@ -83,9 +88,14 @@ function showView(view) {
     document.getElementById('results-view').style.display = view === 'results' ? '' : 'none';
 }
 
-function renderLobbyPlayers(players) {
+function renderLobbyPlayers(players, hostName) {
     const ul = document.getElementById('lobby-players');
     ul.innerHTML = '';
+    if (hostName) {
+        const li = document.createElement('li');
+        li.textContent = hostName + ' (Host)';
+        ul.appendChild(li);
+    }
     players.forEach((p) => {
         const li = document.createElement('li');
         li.textContent = p;

@@ -36,6 +36,13 @@ const BENCHMARKS = [
   { id: 'verbal-memory',  name: 'Verbal Memory',  url: '/benchmarks/verbal-memory/index.html',  lowerIsBetter: false },
 ];
 
+function buildLobbyPayload(game) {
+  return {
+    hostName: game.hostName || 'Host',
+    players: game.players.map(p => p.name),
+  };
+}
+
 function generatePin() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
@@ -52,6 +59,7 @@ io.on('connection', (socket) => {
     games[pin] = {
       pin,
       host: socket.id,
+      hostName: 'Host',
       players: [],        // [{name, socketId}]
       started: false,
       currentBenchmark: null,
@@ -90,9 +98,9 @@ io.on('connection', (socket) => {
     socket._joinedGame = pin;
     socket._playerName = name;
 
-    const playerNames = game.players.map(p => p.name);
-    io.to(`game-${pin}`).emit('players-updated', playerNames);
-    callback({ success: true, players: playerNames });
+    const payload = buildLobbyPayload(game);
+    io.to(`game-${pin}`).emit('players-updated', payload);
+    callback({ success: true, players: payload.players, hostName: payload.hostName });
   });
 
   // Host starts the game
@@ -232,8 +240,8 @@ io.on('connection', (socket) => {
       const game = games[socket._joinedGame];
       if (game) {
         game.players = game.players.filter(p => p.socketId !== socket.id);
-        const playerNames = game.players.map(p => p.name);
-        io.to(`game-${socket._joinedGame}`).emit('players-updated', playerNames);
+        const payload = buildLobbyPayload(game);
+        io.to(`game-${socket._joinedGame}`).emit('players-updated', payload);
       }
     }
     // Clean up hosted game if host disconnects
